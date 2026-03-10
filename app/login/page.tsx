@@ -31,15 +31,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-slate-950">
+    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-background">
       {/* Animated Abstract Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent-600/20 rounded-full blur-[120px] animate-pulse" />
         <motion.div 
           animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[20%] right-[20%] w-[30%] h-[30%] border border-white/5 rounded-full"
+          className="absolute top-[20%] right-[20%] w-[30%] h-[30%] border border-foreground/10 rounded-full"
         />
       </div>
 
@@ -58,37 +58,37 @@ export default function LoginPage() {
           >
             <Sparkles className="text-white w-8 h-8" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Referral Admin</h1>
-          <p className="text-slate-400 mt-2 font-medium">Enterprise HRIS Integration Portal</p>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">Referral Admin</h1>
+          <p className="text-foreground/70 mt-2 font-medium">Enterprise HRIS Integration Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-300 ml-1">Username</label>
+            <label className="text-sm font-semibold text-foreground/80 ml-1">Username</label>
             <div className="relative group">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/60 group-focus-within:text-blue-400 transition-colors" />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 placeholder="Enter your username"
-                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all placeholder:text-slate-600"
+                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all placeholder:text-foreground/50"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-slate-300 ml-1">Password</label>
+            <label className="text-sm font-semibold text-foreground/80 ml-1">Password</label>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/60 group-focus-within:text-blue-400 transition-colors" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all placeholder:text-slate-600"
+                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all placeholder:text-foreground/50"
               />
             </div>
           </div>
@@ -121,8 +121,8 @@ export default function LoginPage() {
           </motion.button>
         </form>
 
-        <div className="mt-8 pt-8 border-t border-white/5 text-center">
-          <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Authorized Personnel Only</p>
+        <div className="mt-8 pt-8 border-t border-foreground/10 text-center">
+          <p className="text-xs text-foreground/60 uppercase tracking-widest font-bold">Authorized Personnel Only</p>
         </div>
       </motion.div>
     </div>

@@ -2,49 +2,79 @@
 
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Consolas, monospace;
   
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+  /* PRIMARY: #004360 — structural color for sidebar, text, borders */
+  --color-primary-50: #e6eff5;
+  --color-primary-100: #bcd8e6;
+  --color-primary-200: #8cbad4;
+  --color-primary-300: #579ac2;
+  --color-primary-400: #2b7cae;
+  --color-primary-500: #004360;
+  --color-primary-600: #00364d;
+  --color-primary-700: #002a3c;
+  --color-primary-800: #001f2e;
+  --color-primary-900: #001724;
+
+  /* SECONDARY: #FF6B0B — interactive/action color for buttons, active states */
+  /* Aliased as 'blue' so bg-blue-600 = action orange throughout the UI */
+  --color-blue-50:  #fff4ed;
+  --color-blue-100: #ffe4d1;
+  --color-blue-200: #ffc9a3;
+  --color-blue-300: #ffab70;
+  --color-blue-400: #ff8b3d;
+  --color-blue-500: #ff6b0b;
+  --color-blue-600: #e65200;
+  --color-blue-700: #c23e00;
+  --color-blue-800: #993300;
+  --color-blue-900: #7a2b04;
+  --color-blue-950: #421300;
+
+  /* TERTIARY/ACCENT: #FF8F12 — highlights, pings, glow effects */
+  --color-amber-50:  #fffaf0;
+  --color-amber-100: #fff2d6;
+  --color-amber-200: #ffe1a3;
+  --color-amber-300: #ffcc66;
+  --color-amber-400: #ffb32e;
+  --color-amber-500: #ff8f12;
+  --color-amber-600: #e67300;
+  --color-amber-700: #bf5600;
+  --color-amber-800: #994500;
+  --color-amber-900: #7a3805;
+  --color-amber-950: #421b00;
+
+  /* SECONDARY: #FF6B0B */
+  --color-secondary-500: #ff6b0b;
+  --color-secondary-600: #e65200;
+
+  /* ACCENT: #FF8F12 */
+  --color-accent-500: #ff8f12;
+  --color-accent-600: #e67300;
+
+  /* Neutral text helpers — lightest tones of primary */
+  --color-slate-400: #579ac2;
+  --color-slate-500: #2b7cae;
+  --color-slate-600: #004e73;
+  --color-slate-700: #004360;
+  --color-slate-800: #00364d;
+  --color-slate-900: #001f2e;
+  --color-slate-950: #001724;
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #ffffff;
+  --foreground: #004360;
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --primary: #3b82f6;
+  --card-foreground: #004360;
+  --border: #bcd8e6;
+  --input: #bcd8e6;
+  --primary: #004360;
   --primary-foreground: #ffffff;
-  --secondary: #64748b;
-  --secondary-foreground: #f8fafc;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --secondary: #ff6b0b;
+  --secondary-foreground: #ffffff;
+  --accent: #ff8f12;
+  --accent-foreground: #ffffff;
   --radius: 1rem;
-}
-
-.dark {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --card: #0f172a;
-  --card-foreground: #f8fafc;
-  --border: #1e293b;
-  --input: #1e293b;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --secondary: #94a3b8;
-  --secondary-foreground: #020617;
-  --accent: #1e293b;
-  --accent-foreground: #f8fafc;
 }
 
 @layer base {
@@ -61,14 +91,10 @@
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dark .glass {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 67, 96, 0.1); /* Primary color border */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
 
 .animate-gradient {
