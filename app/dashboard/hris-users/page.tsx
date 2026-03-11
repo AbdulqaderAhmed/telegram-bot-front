@@ -20,7 +20,6 @@ import {
 import api from '@/lib/axios';
 
 interface HrisUser {
-  id: number;
   ID: string;
   Fullname: string;
   username: string;
@@ -128,14 +127,14 @@ export default function HrisUsersPage() {
             <tbody className="divide-y divide-foreground/10">
               {loading ? (
                 [...Array(5)].map((_, i) => (
-                  <tr key={i} className="animate-pulse">
+                  <tr key={`loading-${i}`} className="animate-pulse">
                     <td colSpan={5} className="px-8 py-10 bg-foreground/[0.02]" />
                   </tr>
                 ))
               ) : (
                 users.map((user) => (
                   <motion.tr 
-                    key={user.id} 
+                    key={user.ID} 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="hover:bg-foreground/[0.02] transition-all group"
