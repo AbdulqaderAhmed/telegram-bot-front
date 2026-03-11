@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
 
 const roboto = Roboto({ 
   subsets: ["latin"],
   weight: ["100", "300", "400", "500", "700", "900"],
-  display: "swap"
+  display: "swap",
+  variable: "--font-roboto"
+});
+
+const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto-mono"
 });
 
 export const metadata: Metadata = {
@@ -21,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${roboto.className} antialiased`}>
+      <body className={`${roboto.variable} ${robotoMono.variable} ${roboto.className} antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>
