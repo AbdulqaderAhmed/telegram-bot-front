@@ -78,9 +78,8 @@ export default function AnalyticsPage() {
 
   const trend = calculateTrend();
 
-  // Branding: #004360 (Primary), #FF6B0B (Secondary), #FF8F12 (Accent)
   return (
-    <div className="min-h-screen bg-white text-[#004360] font-sans">
+    <div className="min-h-screen bg-white text-[#004360]">
       <div className="max-w-[1600px] mx-auto space-y-12 pb-20">
         
         {/* TOP BAR / HEADER */}
