@@ -17,7 +17,7 @@
   --color-primary-900: #001724;
 
   /* SECONDARY: #FF6B0B — interactive/action color for buttons, active states */
-  /* Aliased as 'blue' so bg-blue-600 = action orange throughout the UI */
+  /* NOTE: Named as 'blue' for Tailwind compatibility, but visually 'Brand Orange' */
   --color-blue-50:  #fff4ed;
   --color-blue-100: #ffe4d1;
   --color-blue-200: #ffc9a3;
@@ -88,6 +88,24 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
+  
+  /* Improved Focus States */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 .glass {

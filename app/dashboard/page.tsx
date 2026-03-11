@@ -154,6 +154,37 @@ export default function DashboardOverview() {
         )}
       </div>
 
+      {/* Quick Actions Support */}
+      <section className="space-y-4">
+        <h3 className="text-xs font-black text-foreground/40 uppercase tracking-[0.2em] flex items-center gap-3">
+          <span className="w-10 h-[1px] bg-foreground/10" />
+          Mission Control Quick Actions
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+           {[
+             { label: 'Audit Fraud logs', desc: 'Review flagged suspicious referral patterns', icon: ShieldCheck, color: 'rose' },
+             { label: 'Generate Reports', desc: 'Export weekly growth & conversion datasets', icon: Rocket, color: 'blue' },
+             { label: 'Manage Segments', desc: 'Update workforce grouping categories', icon: Users, color: 'amber' },
+           ].map((action, i) => (
+             <motion.div
+               key={action.label}
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               transition={{ delay: 0.2 + (i * 0.05) }}
+               className="p-5 glass rounded-[2rem] flex items-center gap-5 group cursor-pointer hover:bg-foreground/5 transition-all"
+             >
+               <div className={`w-14 h-14 rounded-2xl bg-${action.color}-500/10 flex items-center justify-center text-${action.color}-500 group-hover:scale-110 group-hover:bg-${action.color}-500 group-hover:text-white transition-all shadow-lg shadow-transparent group-hover:shadow-${action.color}-500/20`}>
+                 <action.icon className="w-6 h-6" />
+               </div>
+               <div>
+                 <p className="text-foreground font-bold text-sm tracking-tight">{action.label}</p>
+                 <p className="text-foreground/40 text-[10px] font-medium leading-tight mt-1">{action.desc}</p>
+               </div>
+             </motion.div>
+           ))}
+        </div>
+      </section>
+
       {/* Chart + Activity Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Referral Status Breakdown */}

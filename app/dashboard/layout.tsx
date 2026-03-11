@@ -19,6 +19,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import Link from 'next/link';
+import { useRef } from 'react';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
@@ -33,6 +34,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, logout, isLoading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut Ctrl+K to search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Helper to get breadcrumbs
+  const getBreadcrumbs = () => {
+    const segments = pathname.split('/').filter(Boolean);
+    return segments.map((segment: string, index: number) => {
+      const href = '/' + segments.slice(0, index + 1).join('/');
+      const label = segment.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      return { label, href };
+    });
+  };
+
+  const breadcrumbs = getBreadcrumbs();
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -52,6 +78,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-background flex font-sans">
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1000] focus:px-6 focus:py-3 focus:bg-blue-600 focus:text-white focus:rounded-xl focus:shadow-2xl focus:font-bold transition-all border-2 border-white"
+      >
+        Skip to main content
+      </a>
+
       {/* Sidebar */}
       <motion.aside
         initial={false}
@@ -139,11 +172,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
 
           <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-3 glass px-4 py-2 rounded-xl">
+            <div className="hidden md:flex items-center gap-3 glass px-4 py-2 rounded-xl focus-within:ring-2 focus-within:ring-blue-500/30 transition-all">
               <Search className="w-4 h-4 text-foreground/60" />
               <input 
+                ref={searchInputRef}
                 type="text" 
-                placeholder="Quick search..." 
+                placeholder="Search... (Ctrl+K)" 
                 className="bg-transparent border-none outline-none text-sm text-foreground placeholder:text-foreground/50 w-40"
               />
             </div>
@@ -169,7 +203,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        <div className="p-8">
+        <div id="main-content" className="p-8">
+          {/* Breadcrumbs */}
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground/40">
+            {breadcrumbs.map((crumb: { label: string, href: string }, i: number) => (
+              <React.Fragment key={crumb.href}>
+                {i > 0 && <ChevronRight className="w-3 h-3" />}
+                <Link 
+                  href={crumb.href}
+                  className={`hover:text-blue-500 transition-colors ${i === breadcrumbs.length - 1 ? 'text-foreground/60' : ''}`}
+                >
+                  {crumb.label}
+                </Link>
+              </React.Fragment>
+            ))}
+          </nav>
           {children}
         </div>
       </main>

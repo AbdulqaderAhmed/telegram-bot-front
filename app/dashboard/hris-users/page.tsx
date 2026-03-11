@@ -72,11 +72,15 @@ export default function HrisUsersPage() {
         <div className="flex items-center gap-3">
           <button 
             onClick={fetchUsers}
+            aria-label="Refresh users list"
             className="p-4 glass rounded-2xl hover:bg-foreground/5 text-foreground/70 hover:text-foreground transition-all group"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
           </button>
-          <button className="px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl flex items-center gap-3 shadow-lg shadow-blue-600/20 transition-all active:scale-95 group">
+          <button 
+            aria-label="Export Dataset"
+            className="px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl flex items-center gap-3 shadow-lg shadow-blue-600/20 transition-all active:scale-95 group"
+          >
             Export Dataset
             <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
           </button>
@@ -176,10 +180,16 @@ export default function HrisUsersPage() {
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-3 glass rounded-xl hover:bg-blue-600/10 hover:text-blue-400 text-foreground/60 transition-all opacity-0 group-hover:opacity-100">
+                        <button 
+                          aria-label={`View details for ${user.Fullname}`}
+                          className="p-3 glass rounded-xl hover:bg-blue-600/10 hover:text-blue-400 text-foreground/60 transition-all opacity-0 group-hover:opacity-100"
+                        >
                           <ExternalLink className="w-4 h-4" />
                         </button>
-                        <button className="p-3 glass rounded-xl hover:bg-foreground/10 text-foreground/60 transition-all">
+                        <button 
+                          aria-label="More actions"
+                          className="p-3 glass rounded-xl hover:bg-foreground/10 text-foreground/60 transition-all"
+                        >
                           <MoreVertical className="w-4 h-4" />
                         </button>
                       </div>
@@ -200,6 +210,7 @@ export default function HrisUsersPage() {
             <button 
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
+              aria-label="Previous page"
               className="w-12 h-12 glass rounded-2xl flex items-center justify-center text-foreground/70 hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent transition-all"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -209,15 +220,18 @@ export default function HrisUsersPage() {
                  <button 
                     key={i}
                     onClick={() => setPage(i + 1)}
-                    className={`w-12 h-12 rounded-2xl text-xs font-black transition-all ${page === i + 1 ? 'bg-blue-600 text-foreground shadow-lg shadow-blue-600/30' : 'glass text-foreground/60 hover:text-foreground hover:bg-foreground/5'}`}
+                    aria-label={`Go to page ${i + 1}`}
+                    aria-current={page === i + 1 ? 'page' : undefined}
+                    className={`w-12 h-12 rounded-2xl text-xs font-black transition-all ${page === i + 1 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'glass text-foreground/60 hover:text-foreground hover:bg-foreground/5'}`}
                  >
-                   {i+1}
+                    {i+1}
                  </button>
                ))}
             </div>
             <button 
               disabled={page === totalPages}
               onClick={() => setPage(p => p + 1)}
+              aria-label="Next page"
               className="w-12 h-12 glass rounded-2xl flex items-center justify-center text-foreground/70 hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent transition-all"
             >
               <ChevronRight className="w-5 h-5" />
