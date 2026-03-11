@@ -23,11 +23,9 @@ import { useRef } from 'react';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
-  { icon: Users, label: 'HRIS Accounts', href: '/dashboard/hris-users' },
   { icon: UserPlus, label: 'Referral Logs', href: '/dashboard/referrals' },
   { icon: ShieldCheck, label: 'Security Audit', href: '/dashboard/fraud' },
   { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
-  { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
