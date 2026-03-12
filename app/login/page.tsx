@@ -58,8 +58,8 @@ export default function LoginPage() {
           >
             <Sparkles className="text-white w-8 h-8" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-foreground tracking-tight">Referral Admin</h1>
-          <p className="text-foreground/70 mt-2 font-medium">Enterprise HRIS Integration Portal</p>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">Wegagen Referral Admin</h1>
+          <p className="text-foreground/70 mt-2 font-medium">Secured Access Portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

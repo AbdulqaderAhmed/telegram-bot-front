@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 exit={{ opacity: 0, x: -10 }}
                 className="text-foreground font-bold text-lg tracking-tight whitespace-nowrap"
               >
-                Guardian Panel
+                Wegagen Referral Hub
               </motion.span>
             )}
           </AnimatePresence>

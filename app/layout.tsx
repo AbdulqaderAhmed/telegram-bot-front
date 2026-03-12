@@ -17,8 +17,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Referral Track Admin",
-  description: "Enterprise HRIS & Telegram Referral Tracking Dashboard",
+  title: "Wegagen Referral Admin",
+  description: "Secure Referral Tracking & Management System",
 };
 
 export default function RootLayout({
