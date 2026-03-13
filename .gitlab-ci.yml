@@ -1,0 +1,44 @@
+stages:
+  - deploy
+
+deploy_frontend:
+  stage: deploy
+  only:
+    - master
+  tags:
+    - TG-ABDU-2
+
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan $SERVER_IP >> ~/.ssh/known_hosts
+
+  script:
+    - echo "Building Docker image..."
+
+    # ✅ PASS API URL DURING BUILD (ONE LINE)
+    - docker build --build-arg NEXT_PUBLIC_API_URL=http://10.57.23.109:8003 -t telegram-bot-front .
+
+    - echo "Saving image..."
+    - docker save telegram-bot-front | gzip > telegram-bot-front.tar.gz
+
+    - echo "Copying image to server..."
+    - scp telegram-bot-front.tar.gz $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/
+
+    - echo "Deploying on server..."
+    - |
+      ssh $SERVER_USER@$SERVER_IP << EOF
+        docker network create ba-dns || true
+        
+        docker load < telegram-bot-front.tar.gz
+        docker stop telegram-bot-front || true
+        docker rm -f telegram-bot-front || true
+
+        docker run -d \
+          --name telegram-bot-front \
+          -p 4004:4004 \
+          --restart always \
+          --network ba-dns \
+          telegram-bot-front
+      EOF
