@@ -29,7 +29,7 @@ deploy_frontend:
     - echo "Deploying on server..."
     - |
       ssh $SERVER_USER@$SERVER_IP << EOF
-        docker network create ba-dns || true
+        docker network create tg-dns || true
         
         docker load < telegram-bot-front.tar.gz
         docker stop telegram-bot-front || true
@@ -39,6 +39,6 @@ deploy_frontend:
           --name telegram-bot-front \
           -p 4005:4005 \
           --restart always \
-          --network ba-dns \
+          --network tg-dns \
           telegram-bot-front
       EOF
