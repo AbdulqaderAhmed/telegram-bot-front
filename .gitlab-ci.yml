@@ -18,7 +18,7 @@ deploy_frontend:
     - echo "Building Docker image..."
 
     # ✅ PASS API URL DURING BUILD (ONE LINE)
-    - docker build --build-arg NEXT_PUBLIC_API_URL=http://10.57.23.109:8003 -t telegram-bot-front .
+    - docker build --build-arg NEXT_PUBLIC_API_URL=http://10.57.23.109:8004 -t telegram-bot-front .
 
     - echo "Saving image..."
     - docker save telegram-bot-front | gzip > telegram-bot-front.tar.gz
