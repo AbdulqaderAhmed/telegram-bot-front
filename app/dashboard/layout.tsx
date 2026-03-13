@@ -28,6 +28,7 @@ const menuItems = [
   { icon: Trophy, label: 'Reports & Leaderboard', href: '/dashboard/reports' },
   { icon: ShieldCheck, label: 'Security Audit', href: '/dashboard/fraud' },
   { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
+  { icon: Settings, label: 'Configuration', href: '/dashboard/settings' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
