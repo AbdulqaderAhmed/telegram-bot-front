@@ -37,7 +37,7 @@ deploy_frontend:
 
         docker run -d \
           --name telegram-bot-front \
-          -p 4004:4004 \
+          -p 4005:4005 \
           --restart always \
           --network ba-dns \
           telegram-bot-front
