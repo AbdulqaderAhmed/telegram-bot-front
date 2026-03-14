@@ -165,8 +165,8 @@ export default function ReportsPage() {
       {/* QUICK STATS CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          {[
-           { label: 'Top Performer', value: leaderboard[0]?.user?.username || '—', icon: Crown, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-           { label: 'Ecosystem Growth', value: `+${leaderboard.reduce((a, b) => a + (b.referralCount || 0), 0)} Verified`, icon: TrendingUp, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+           { label: 'Top Performer', value: leaderboard.length > 0 ? (leaderboard[0]?.user?.username || leaderboard[0]?.user?.firstName || '—') : '—', icon: Crown, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+           { label: 'Ecosystem Growth', value: leaderboard.length > 0 ? `+${leaderboard.reduce((a, b) => a + (b.referralCount || 0), 0)} Verified` : '0 Verified', icon: TrendingUp, color: 'text-blue-500', bg: 'bg-blue-500/10' },
            { label: 'Active Champions', value: leaderboard.length, icon: UserCheck, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
          ].map((stat, i) => (
            <motion.div
@@ -242,7 +242,7 @@ export default function ReportsPage() {
                     index={i}
                     isExpanded={expandedRow === entry.user.id}
                     onToggle={() => toggleRow(entry.user.id)}
-                    maxReferrals={leaderboard[0]?.referralCount || 1}
+                    maxReferrals={leaderboard.length > 0 ? Math.max(leaderboard[0].referralCount, 1) : 1}
                     getMedalIcon={getMedalIcon}
                   />
                 ))
@@ -311,11 +311,11 @@ function LeaderboardRow({
         <td className="px-6 py-8">
            <div className="flex items-center gap-4">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xs font-black shadow-lg shadow-blue-900/10 ${index < 3 ? 'bg-[#004360]' : 'bg-slate-300'}`}>
-                 {entry.user.firstName?.charAt(0).toUpperCase() || entry.user.username?.charAt(0).toUpperCase() || entry.user.telegramId.charAt(0)}
+                 {entry.user.firstName?.charAt(0).toUpperCase() || entry.user.username?.charAt(0).toUpperCase() || entry.user.telegramId?.charAt(0) || '?'}
               </div>
               <div className="flex flex-col">
                  <span className="text-sm font-black text-[#004360]">
-                   {[entry.user.firstName, entry.user.lastName].filter(Boolean).join(' ') || entry.user.username || `@${entry.user.telegramId}`}
+                   {[entry.user.firstName, entry.user.lastName].filter(Boolean).join(' ') || entry.user.username || `@${entry.user.telegramId}` || 'Unknown User'}
                  </span>
                  {entry.user.username && <span className="text-[10px] font-bold text-slate-400">@{entry.user.username}</span>}
               </div>
