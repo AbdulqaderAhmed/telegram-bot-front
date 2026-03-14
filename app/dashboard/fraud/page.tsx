@@ -71,12 +71,12 @@ export default function FraudPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <div className="flex items-center gap-3 text-rose-500 font-black text-xs uppercase tracking-[0.2em]">
+          <div className="flex items-center gap-3 text-rose-500 font-normal text-[10px] uppercase tracking-[0.2em]">
             <span className="w-8 h-[2px] bg-rose-500" />
             Security Shield
           </div>
-          <h1 className="text-4xl font-black text-foreground tracking-tight">Suspicious Activity Audit</h1>
-          <p className="text-foreground/60 font-medium max-w-2xl">
+          <h1 className="text-[36px] font-bold text-foreground tracking-tight">Suspicious Activity Audit</h1>
+          <p className="text-foreground/60 text-[14px] font-normal max-w-2xl">
             Review automatically flagged referral patterns and manual fraud reports.
           </p>
         </div>
@@ -98,8 +98,8 @@ export default function FraudPage() {
              <AlertTriangle className="w-7 h-7" />
            </div>
            <div>
-             <p className="text-foreground/40 text-[10px] font-black uppercase tracking-[0.1em]">Total Flagged</p>
-             <h3 className="text-2xl font-black text-foreground">{totalLogs}</h3>
+             <p className="text-foreground/40 text-[10px] font-normal uppercase tracking-[0.1em]">Total Flagged</p>
+             <h3 className="text-[36px] font-bold text-foreground">{totalLogs}</h3>
            </div>
         </div>
         <div className="p-6 glass rounded-3xl border border-foreground/10 flex items-center gap-5">
@@ -107,8 +107,8 @@ export default function FraudPage() {
              <ShieldAlert className="w-7 h-7" />
            </div>
            <div>
-             <p className="text-foreground/40 text-[10px] font-black uppercase tracking-[0.1em]">Critical Patterns</p>
-             <h3 className="text-2xl font-black text-foreground">{logs.filter(l => l.type === 'rate_limit' || l.type === 'fake_user').length}</h3>
+             <p className="text-foreground/40 text-[10px] font-normal uppercase tracking-[0.1em]">Critical Patterns</p>
+             <h3 className="text-[36px] font-bold text-foreground">{logs.filter(l => l.type === 'rate_limit' || l.type === 'fake_user').length}</h3>
            </div>
         </div>
         <div className="p-6 glass rounded-3xl border border-foreground/10 flex items-center gap-5">
@@ -116,8 +116,8 @@ export default function FraudPage() {
              <Clock className="w-7 h-7" />
            </div>
            <div>
-             <p className="text-foreground/40 text-[10px] font-black uppercase tracking-[0.1em]">Last 24 Hours</p>
-             <h3 className="text-2xl font-black text-foreground">{logs.length}</h3>
+             <p className="text-foreground/40 text-[10px] font-normal uppercase tracking-[0.1em]">Last 24 Hours</p>
+             <h3 className="text-[36px] font-bold text-foreground">{logs.length}</h3>
            </div>
         </div>
       </div>
@@ -127,10 +127,10 @@ export default function FraudPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-foreground/10 bg-foreground/5">
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-foreground/70">Subject</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-foreground/70">Violation Type / Reason</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-foreground/70">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-foreground/70">Timestamp</th>
+                <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-foreground/70">Subject</th>
+                <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-foreground/70">Violation Type / Reason</th>
+                <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-foreground/70">Status</th>
+                <th className="px-8 py-6 text-[10px] font-bold uppercase tracking-widest text-foreground/70">Timestamp</th>
                 <th className="px-8 py-6"></th>
               </tr>
             </thead>
@@ -143,7 +143,7 @@ export default function FraudPage() {
                 ))
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-8 py-20 text-center text-foreground/30 font-bold">
+                  <td colSpan={5} className="px-8 py-20 text-center text-foreground/30 text-[14px] font-normal">
                     Clean slate. No suspicious patterns detected! 🛡️
                   </td>
                 </tr>
@@ -161,25 +161,25 @@ export default function FraudPage() {
                           <UserIcon className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-foreground">
+                          <p className="text-[14px] font-bold text-foreground">
                             {log.user?.firstName ? `${log.user.firstName} ${log.user.lastName}` : `@${log.user?.username || 'unknown'}`}
                           </p>
-                          <p className="text-[10px] font-mono text-foreground/40">{log.user?.telegramId || 'No ID'}</p>
+                          <p className="text-[10px] font-normal text-foreground/40">{log.user?.telegramId || 'No ID'}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <div className="bg-rose-500/5 text-rose-500/80 px-4 py-3 rounded-2xl border border-rose-500/10 text-[11px] font-bold">
+                      <div className="bg-rose-500/5 text-rose-500/80 px-4 py-3 rounded-2xl border border-rose-500/10 text-[12px] font-normal">
                         {log.reason}
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                       <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(log.status)}`}>
+                       <span className={`px-4 py-1.5 rounded-full text-[10px] font-normal uppercase tracking-widest border ${getStatusStyle(log.status)}`}>
                          {log.status}
                        </span>
                     </td>
                     <td className="px-8 py-6">
-                       <span className="text-xs font-mono text-foreground/60">{new Date(log.createdAt).toLocaleString()}</span>
+                       <span className="text-[12px] font-mono text-foreground/60">{new Date(log.createdAt).toLocaleString()}</span>
                     </td>
                     <td className="px-8 py-6 text-right">
                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
@@ -200,7 +200,7 @@ export default function FraudPage() {
 
         {/* Pagination */}
         <div className="px-8 py-8 border-t border-foreground/10 flex items-center justify-between glass">
-          <p className="text-xs font-bold text-foreground/60 uppercase tracking-widest">
+          <p className="text-[12px] font-normal text-foreground/60 uppercase tracking-widest">
             Audit Archive — {totalLogs} Events
           </p>
           <div className="flex items-center gap-3">

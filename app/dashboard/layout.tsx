@@ -129,7 +129,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -10 }}
-                        className="font-medium whitespace-nowrap"
+                        className="font-normal text-[14px] whitespace-nowrap"
                       >
                         {item.label}
                       </motion.span>
@@ -153,7 +153,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
-                  className="font-medium whitespace-nowrap"
+                  className="font-normal text-[14px] whitespace-nowrap"
                 >
                   Sign Out
                 </motion.span>
@@ -180,7 +180,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 ref={searchInputRef}
                 type="text" 
                 placeholder="Search... (Ctrl+K)" 
-                className="bg-transparent border-none outline-none text-sm text-foreground placeholder:text-foreground/50 w-40"
+                className="bg-transparent border-none outline-none text-[14px] font-normal text-foreground placeholder:text-foreground/50 w-40"
               />
             </div>
             
@@ -194,8 +194,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-sm font-bold text-foreground leading-none">{user.fullname}</p>
-                  <p className="text-[10px] text-foreground/60 mt-1 uppercase tracking-wider font-bold">{user.role}</p>
+                  <p className="text-[14px] font-bold text-foreground leading-none">{user.fullname}</p>
+                  <p className="text-[12px] text-foreground/60 mt-1 uppercase tracking-wider font-normal">{user.role}</p>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-600/20">
                   {user.fullname.charAt(0)}
@@ -207,7 +207,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div id="main-content" className="p-8">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-foreground/40">
+          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-[12px] font-normal uppercase tracking-widest text-foreground/40">
             {breadcrumbs.map((crumb: { label: string, href: string }, i: number) => (
               <React.Fragment key={crumb.href}>
                 {i > 0 && <ChevronRight className="w-3 h-3" />}

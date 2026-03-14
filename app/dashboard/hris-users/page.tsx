@@ -64,8 +64,8 @@ export default function HrisUsersPage() {
             <span className="w-8 h-[2px] bg-blue-500" />
             Core Directory
           </div>
-          <h1 className="text-4xl font-black text-foreground tracking-tight">HRIS Enterprise Accounts</h1>
-          <p className="text-foreground/60 font-medium max-w-2xl">Manage and monitor synchronized workforce data from the central SQL Server view.</p>
+          <h1 className="text-[36px] font-bold text-foreground tracking-tight">HRIS Enterprise Accounts</h1>
+          <p className="text-foreground/60 text-[14px] font-normal max-w-2xl">Manage and monitor synchronized workforce data from the central SQL Server view.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -78,7 +78,7 @@ export default function HrisUsersPage() {
           </button>
           <button 
             aria-label="Export Dataset"
-            className="px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl flex items-center gap-3 shadow-lg shadow-blue-600/20 transition-all active:scale-95 group"
+            className="px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-[14px] rounded-2xl flex items-center gap-3 shadow-lg shadow-blue-600/20 transition-all active:scale-95 group"
           >
             Export Dataset
             <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
@@ -93,18 +93,18 @@ export default function HrisUsersPage() {
           <input 
             type="text" 
             placeholder="Search by name, ID, or username..." 
-            className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl py-4 pl-16 pr-6 text-foreground text-sm font-medium focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-foreground/50"
+            className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl py-4 pl-16 pr-6 text-foreground text-[14px] font-normal focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 outline-none transition-all placeholder:text-foreground/50"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchUsers()}
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <button className="flex items-center gap-3 px-6 py-4 glass rounded-2xl text-foreground/70 hover:text-foreground transition-all font-bold text-sm h-full w-full md:w-auto justify-center">
+          <button className="flex items-center gap-3 px-6 py-4 glass rounded-2xl text-foreground/70 hover:text-foreground transition-all font-normal text-[14px] h-full w-full md:w-auto justify-center">
             <Filter className="w-4 h-4" />
             Segment
           </button>
-          <button className="flex items-center gap-3 px-6 py-4 glass rounded-2xl text-foreground/70 hover:text-foreground transition-all font-bold text-sm h-full w-full md:w-auto justify-center">
+          <button className="flex items-center gap-3 px-6 py-4 glass rounded-2xl text-foreground/70 hover:text-foreground transition-all font-normal text-[14px] h-full w-full md:w-auto justify-center">
             <Clock className="w-4 h-4" />
             History
           </button>
@@ -145,7 +145,7 @@ export default function HrisUsersPage() {
                           {user.Fullname?.charAt(0)}
                         </div>
                         <div>
-                          <p className="text-foreground font-bold leading-tight group-hover:text-blue-400 transition-all">{user.Fullname || 'Unknown Identity'}</p>
+                          <p className="text-foreground font-bold text-[14px] leading-tight group-hover:text-blue-400 transition-all">{user.Fullname || 'Unknown Identity'}</p>
                           <p className="text-[11px] text-foreground/60 font-black uppercase tracking-wider mt-1.5 flex items-center gap-2">
                              <span className="bg-foreground/10 text-foreground/70 px-2 py-0.5 rounded-md font-mono">{user.ID}</span>
                              • {user.username}
@@ -155,7 +155,7 @@ export default function HrisUsersPage() {
                     </td>
                     <td className="px-8 py-6">
                       <div className="space-y-2">
-                        <p className="text-sm font-bold text-foreground/80 flex items-center gap-2">
+                        <p className="text-[14px] font-normal text-foreground/80 flex items-center gap-2">
                           <Briefcase className="w-3.5 h-3.5 text-blue-500" />
                           {user.position || 'Contractor'}
                         </p>
@@ -173,8 +173,8 @@ export default function HrisUsersPage() {
                     </td>
                     <td className="px-8 py-6">
                        <div className="flex flex-col gap-1">
-                         <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-tight">Last Synced</span>
-                         <span className="text-xs font-mono text-foreground/70">{new Date(user.syncedAt).toLocaleTimeString()}</span>
+                         <span className="text-[10px] font-normal text-foreground/50 uppercase tracking-tight">Last Synced</span>
+                         <span className="text-[12px] font-mono text-foreground/70">{new Date(user.syncedAt).toLocaleTimeString()}</span>
                        </div>
                     </td>
                     <td className="px-8 py-6 text-right">
@@ -202,7 +202,7 @@ export default function HrisUsersPage() {
 
         {/* Dynamic Pagination */}
         <div className="px-8 py-8 border-t border-foreground/10 flex items-center justify-between glass">
-          <p className="text-xs font-bold text-foreground/60 tracking-tight uppercase">
+          <p className="text-[12px] font-normal text-foreground/60 tracking-tight uppercase">
             Displaying <span className="text-foreground">{users.length}</span> of <span className="text-foreground">Active Entities</span>
           </p>
           <div className="flex items-center gap-4">

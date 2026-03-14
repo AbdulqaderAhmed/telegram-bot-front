@@ -38,7 +38,7 @@ function StatusBadge({ status }: { status: ActivityLog["status"] }) {
   const { icon: Icon, cls } = map[status];
   return (
     <span
-      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border w-fit ${cls}`}
+      className={`px-3 py-1 rounded-full text-[10px] font-normal uppercase tracking-widest flex items-center gap-1.5 border w-fit ${cls}`}
     >
       <Icon className="w-3 h-3" />
       {status}
@@ -115,23 +115,23 @@ export default function DashboardOverview() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-4xl font-black text-foreground tracking-tight">
+          <h1 className="text-[36px] font-bold text-foreground tracking-tight">
             Ecosystem Overview
           </h1>
-          <p className="text-foreground/60 font-medium">
+          <p className="text-foreground/60 text-[14px] font-normal">
             Real-time health synchronization & referral metrics.
           </p>
         </div>
         <div className="flex items-center gap-4">
           {lastUpdated && (
-            <p className="text-xs font-mono text-foreground/40">
+            <p className="text-[12px] font-normal font-mono text-foreground/40">
               Updated {lastUpdated.toLocaleTimeString()}
             </p>
           )}
           <button
             onClick={fetchAll}
             disabled={isLoading}
-            className="flex items-center gap-2 px-5 py-3 glass rounded-2xl text-foreground/70 hover:text-foreground hover:bg-foreground/5 transition-all text-sm font-bold disabled:opacity-50 group"
+            className="flex items-center gap-2 px-5 py-3 glass rounded-2xl text-foreground/70 hover:text-foreground hover:bg-foreground/5 transition-all text-[14px] font-normal disabled:opacity-50 group"
           >
             <RefreshCw
               className={`w-4 h-4 ${isLoading ? "animate-spin" : "group-hover:rotate-180 transition-transform duration-500"}`}
@@ -171,15 +171,15 @@ export default function DashboardOverview() {
                   >
                     <stat.icon className="w-6 h-6" />
                   </div>
-                  <div className="flex items-center gap-1.5 text-foreground/60 font-bold text-xs ring-1 ring-foreground/10 px-2 py-1 rounded-full uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 text-foreground/60 font-bold text-[12px] ring-1 ring-foreground/10 px-2 py-1 rounded-full uppercase tracking-wider">
                     {stat.change}
                     <ArrowUpRight className="w-3 h-3" />
                   </div>
                 </div>
-                <p className="text-foreground/60 text-sm font-bold uppercase tracking-tight mb-2">
+                <p className="text-foreground/60 text-[16px] font-bold uppercase tracking-tight mb-2">
                   {stat.label}
                 </p>
-                <h3 className="text-3xl font-black text-foreground font-mono">
+                <h3 className="text-[36px] font-bold text-foreground font-mono">
                   {stat.value}
                 </h3>
               </motion.div>
@@ -188,7 +188,7 @@ export default function DashboardOverview() {
 
       {/* Quick Actions Support */}
       <section className="space-y-4">
-        <h3 className="text-xs font-black text-foreground/40 uppercase tracking-[0.2em] flex items-center gap-3">
+        <h3 className="text-[12px] font-normal text-foreground/40 uppercase tracking-[0.2em] flex items-center gap-3">
           <span className="w-10 h-px bg-foreground/10" />
           Mission Control Quick Actions
         </h3>
@@ -226,10 +226,10 @@ export default function DashboardOverview() {
                 <action.icon className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-foreground font-bold text-sm tracking-tight">
+                <p className="text-foreground font-bold text-[14px] tracking-tight">
                   {action.label}
                 </p>
-                <p className="text-foreground/40 text-[10px] font-medium leading-tight mt-1">
+                <p className="text-foreground/40 text-[10px] font-normal leading-tight mt-1">
                   {action.desc}
                 </p>
               </div>
@@ -244,7 +244,7 @@ export default function DashboardOverview() {
         <div className="lg:col-span-2 glass rounded-[2.5rem] p-8 border border-foreground/10 relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-600/5 blur-[100px] pointer-events-none group-hover:bg-blue-600/10 transition-all" />
           <div className="flex items-center justify-between mb-10">
-            <h3 className="text-xl font-bold font-mono text-foreground flex items-center gap-3">
+            <h3 className="text-[16px] font-bold font-mono text-foreground flex items-center gap-3">
               <Activity className="text-blue-500 w-5 h-5 animate-pulse" />
               Referral Status Breakdown
             </h3>
@@ -278,11 +278,11 @@ export default function DashboardOverview() {
                 const pct = Math.round((row.value / Math.max(row.total, 1)) * 100) || 0;
                 return (
                   <div key={row.label} className="space-y-2">
-                    <div className="flex items-center justify-between text-sm font-bold">
+                    <div className="flex items-center justify-between text-[14px] font-normal">
                       <span className="text-foreground/70">{row.label}</span>
                       <span className="text-foreground font-mono">
                         {row.value.toLocaleString()}{" "}
-                        <span className="text-foreground/40">({pct}%)</span>
+                        <span className="text-foreground/40 text-[12px]">({pct}%)</span>
                       </span>
                     </div>
                     <div className="h-3 bg-foreground/10 rounded-full overflow-hidden">
@@ -299,26 +299,26 @@ export default function DashboardOverview() {
 
               <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-foreground/10">
                 <div className="text-center">
-                  <p className="text-3xl font-black text-foreground font-mono">
+                  <p className="text-[36px] font-bold text-foreground font-mono">
                     {referralStats.conversionRate || 0}%
                   </p>
-                  <p className="text-xs font-bold text-foreground/50 uppercase tracking-widest mt-1">
+                  <p className="text-[10px] font-normal text-foreground/50 uppercase tracking-widest mt-1">
                     Conversion
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-black text-foreground font-mono">
+                  <p className="text-[36px] font-bold text-foreground font-mono">
                     {referralStats.total || 0}
                   </p>
-                  <p className="text-xs font-bold text-foreground/50 uppercase tracking-widest mt-1">
+                  <p className="text-[10px] font-normal text-foreground/50 uppercase tracking-widest mt-1">
                     Total
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-black text-foreground font-mono">
+                  <p className="text-[36px] font-bold text-foreground font-mono">
                     {referralStats.pending || 0}
                   </p>
-                  <p className="text-xs font-bold text-foreground/50 uppercase tracking-widest mt-1">
+                  <p className="text-[10px] font-normal text-foreground/50 uppercase tracking-widest mt-1">
                     Pending
                   </p>
                 </div>
@@ -334,7 +334,7 @@ export default function DashboardOverview() {
         {/* Live Activity Feed */}
         <div className="glass rounded-4xl p-8 border border-foreground/10 flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h4 className="text-foreground font-bold text-sm uppercase tracking-widest">
+            <h4 className="text-foreground font-bold text-[16px] uppercase tracking-widest">
               Live Activity
             </h4>
             <div className="w-2 h-2 bg-amber-500 rounded-full animate-ping" />
@@ -349,7 +349,7 @@ export default function DashboardOverview() {
                 />
               ))
             ) : activity.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-foreground/30 text-sm font-bold">
+              <div className="h-full flex items-center justify-center text-foreground/30 text-[14px] font-normal">
                 No activity yet
               </div>
             ) : (
@@ -367,7 +367,7 @@ export default function DashboardOverview() {
                       .toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-bold text-foreground truncate">
+                    <p className="text-[12px] font-normal text-foreground truncate">
                       @
                       {log.referrer?.username ||
                         log.referrer?.telegramId ||
@@ -397,10 +397,10 @@ export default function DashboardOverview() {
                 <Rocket className="text-white w-5 h-5" />
               </div>
               <div className="flex-1">
-                <p className="text-foreground font-bold text-sm">
+                <p className="text-foreground font-bold text-[14px]">
                   Sync HRIS Data
                 </p>
-                <p className="text-foreground/50 text-[10px] font-medium">
+                <p className="text-foreground/50 text-[10px] font-normal">
                   {userStats
                     ? `${userStats.totalHris} users synced`
                     : "Checking…"}

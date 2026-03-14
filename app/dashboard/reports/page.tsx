@@ -115,7 +115,7 @@ export default function ReportsPage() {
     if (rank === 1) return <Crown className="w-6 h-6 text-yellow-500 shadow-xl" />;
     if (rank === 2) return <Medal className="w-6 h-6 text-slate-400" />;
     if (rank === 3) return <Award className="w-6 h-6 text-amber-600" />;
-    return <span className="text-xs font-black text-slate-400 font-mono">#{rank}</span>;
+    return <span className="text-[12px] font-bold text-slate-400 font-mono">#{rank}</span>;
   };
 
   return (
@@ -128,12 +128,12 @@ export default function ReportsPage() {
              animate={{ opacity: 1, x: 0 }}
              className="flex items-center gap-3"
            >
-              <div className="px-4 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 text-[10px] font-black uppercase tracking-[0.3em]">
+              <div className="px-4 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 text-[10px] font-normal uppercase tracking-[0.3em]">
                 Elite Performance
               </div>
            </motion.div>
-           <h1 className="text-6xl font-black tracking-tight text-[#004360] leading-[1.1]">Leaderboard & <br/><span className="text-[#FF6B0B]">Growth Reports</span></h1>
-           <p className="text-slate-500 font-medium max-w-xl text-lg">
+           <h1 className="text-[36px] font-bold tracking-tight text-[#004360] leading-[1.1]">Leaderboard & <br/><span className="text-[#FF6B0B]">Growth Reports</span></h1>
+           <p className="text-slate-500 font-normal max-w-xl text-[14px]">
              The ultimate ranking of our ecosystem's top influencers. Track, analyze, and export verified performance data.
            </p>
         </div>
@@ -149,15 +149,15 @@ export default function ReportsPage() {
               <button 
                 onClick={exportToExcel}
                 disabled={leaderboard.length === 0 || exporting}
-                className="flex items-center gap-3 px-8 py-5 bg-[#004360] text-white rounded-2xl font-black text-sm hover:translate-y-[-4px] transition-all shadow-2xl shadow-blue-900/20 active:scale-95 disabled:opacity-50"
+                className="flex items-center gap-3 px-8 py-5 bg-[#004360] text-white rounded-2xl font-bold text-[14px] hover:translate-y-[-4px] transition-all shadow-2xl shadow-blue-900/20 active:scale-95 disabled:opacity-50"
               >
                 {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4 text-emerald-400" />}
                 Export to Excel
               </button>
            </div>
            <div className="px-6 py-3 glass rounded-xl border border-slate-100 flex items-center justify-between">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Last Updated</span>
-              <span className="text-[10px] font-black text-[#004360] font-mono">{new Date().toLocaleTimeString()}</span>
+              <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">Last Updated</span>
+              <span className="text-[10px] font-bold text-[#004360] font-mono">{new Date().toLocaleTimeString()}</span>
            </div>
         </div>
       </header>
@@ -178,8 +178,8 @@ export default function ReportsPage() {
            >
               <div className={`absolute top-0 right-0 p-10 ${stat.bg} rounded-bl-[100px] opacity-20 group-hover:scale-110 transition-transform`} />
               <stat.icon className={`w-8 h-8 ${stat.color} mb-6 relative z-10`} />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest relative z-10">{stat.label}</p>
-              <h3 className="text-3xl font-black text-[#004360] mt-2 relative z-10">{stat.value}</h3>
+              <p className="text-[10px] font-normal text-slate-400 uppercase tracking-widest relative z-10">{stat.label}</p>
+              <h3 className="text-[36px] font-bold text-[#004360] mt-2 relative z-10">{stat.value}</h3>
            </motion.div>
          ))}
       </div>
@@ -192,13 +192,13 @@ export default function ReportsPage() {
                  <Trophy className="w-6 h-6 text-amber-500" />
               </div>
               <div>
-                 <h2 className="text-2xl font-black text-[#004360]">Ranking Table</h2>
-                 <p className="text-xs font-bold text-slate-400">Showing top performers by verified invite volume</p>
+                 <h2 className="text-[16px] font-bold text-[#004360]">Ranking Table</h2>
+                 <p className="text-[12px] font-normal text-slate-400">Showing top performers by verified invite volume</p>
               </div>
            </div>
            <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-slate-400" />
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">All Time Stats</span>
+              <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">All Time Stats</span>
            </div>
         </div>
 
@@ -206,13 +206,13 @@ export default function ReportsPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="pl-10 pr-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-24">Rank</th>
-                <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Champion Account</th>
-                <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Phone Number</th>
-                <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Verified Score</th>
-                <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Onboarding</th>
-                <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Performance Index</th>
-                <th className="pr-10 pl-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Progress</th>
+                <th className="pl-10 pr-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] w-24">Rank</th>
+                <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Champion Account</th>
+                <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Phone Number</th>
+                <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Verified Score</th>
+                <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Onboarding</th>
+                <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Performance Index</th>
+                <th className="pr-10 pl-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-right">Progress</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -229,8 +229,8 @@ export default function ReportsPage() {
                   <td colSpan={7} className="px-10 py-24 text-center">
                     <div className="flex flex-col items-center gap-4 opacity-30 grayscale">
                        <Trophy className="w-16 h-16" />
-                       <p className="text-lg font-black text-slate-500">The leaderboard is currently empty.</p>
-                       <p className="text-sm font-medium">Be the first to refer a user and claim the throne!</p>
+                       <p className="text-[16px] font-bold text-slate-500">The leaderboard is currently empty.</p>
+                       <p className="text-[14px] font-normal">Be the first to refer a user and claim the throne!</p>
                     </div>
                   </td>
                 </tr>
@@ -310,28 +310,28 @@ function LeaderboardRow({
         </td>
         <td className="px-6 py-8">
            <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xs font-black shadow-lg shadow-blue-900/10 ${index < 3 ? 'bg-[#004360]' : 'bg-slate-300'}`}>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-[12px] font-bold shadow-lg shadow-blue-900/10 ${index < 3 ? 'bg-[#004360]' : 'bg-slate-300'}`}>
                  {entry.user.firstName?.charAt(0).toUpperCase() || entry.user.username?.charAt(0).toUpperCase() || entry.user.telegramId?.charAt(0) || '?'}
               </div>
               <div className="flex flex-col">
-                 <span className="text-sm font-black text-[#004360]">
+                 <span className="text-[14px] font-bold text-[#004360]">
                    {[entry.user.firstName, entry.user.lastName].filter(Boolean).join(' ') || entry.user.username || `@${entry.user.telegramId}` || 'Unknown User'}
                  </span>
-                 {entry.user.username && <span className="text-[10px] font-bold text-slate-400">@{entry.user.username}</span>}
+                 {entry.user.username && <span className="text-[10px] font-normal text-slate-400">@{entry.user.username}</span>}
               </div>
            </div>
         </td>
         <td className="px-6 py-8">
-           <span className="text-sm font-bold text-slate-500">{entry.user.phoneNumber || '—'}</span>
+           <span className="text-[14px] font-normal text-slate-500">{entry.user.phoneNumber || '—'}</span>
         </td>
         <td className="px-6 py-8">
            <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-black text-[#004360] font-mono">{entry.referralCount}</span>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pts</span>
+              <span className="text-[36px] font-bold text-[#004360] font-mono">{entry.referralCount}</span>
+              <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">Pts</span>
            </div>
         </td>
         <td className="px-6 py-8">
-           <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+           <span className={`px-4 py-1.5 rounded-full text-[9px] font-normal uppercase tracking-widest border ${
              entry.user.onboardingStatus === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-slate-100 text-slate-400 border-slate-200'
            }`}>
               {entry.user.onboardingStatus}
@@ -341,12 +341,12 @@ function LeaderboardRow({
            <div className="flex items-center gap-3">
              <div className="w-full max-w-[120px] h-2 bg-slate-100 rounded-full overflow-hidden">
                 <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${performancePct}%` }}
-                  className={`h-full rounded-full ${index === 0 ? 'bg-gradient-to-r from-[#FF8F12] to-[#FF6B0B] shadow-lg shadow-[#FF6B0B]/40' : 'bg-[#004360]'}`}
+                   initial={{ width: 0 }}
+                   animate={{ width: `${performancePct}%` }}
+                   className={`h-full rounded-full ${index === 0 ? 'bg-gradient-to-r from-[#FF8F12] to-[#FF6B0B] shadow-lg shadow-[#FF6B0B]/40' : 'bg-[#004360]'}`}
                 />
              </div>
-             <span className="text-[10px] font-black text-slate-400 w-8">{Math.round(performancePct)}%</span>
+             <span className="text-[10px] font-normal text-slate-400 w-8">{Math.round(performancePct)}%</span>
            </div>
         </td>
         <td className="pr-10 pl-6 py-8 text-right">
@@ -367,7 +367,7 @@ function LeaderboardRow({
                 className="overflow-hidden shadow-inner"
               >
                 <div className="p-10">
-                  <h4 className="flex items-center gap-2 text-sm font-black text-[#004360] uppercase tracking-widest mb-6 border-b border-slate-200 pb-4">
+                  <h4 className="flex items-center gap-2 text-[14px] font-bold text-[#004360] uppercase tracking-widest mb-6 border-b border-slate-200 pb-4">
                     <Users className="w-4 h-4 text-[#FF6B0B]" /> Recruited Network ({entry.referralCount})
                   </h4>
                   
@@ -376,7 +376,7 @@ function LeaderboardRow({
                       <Loader2 className="w-5 h-5 animate-spin text-[#FF6B0B]" /> Loading network connections...
                     </div>
                   ) : referredUsers.length === 0 ? (
-                    <div className="text-center p-8 border border-dashed border-slate-200 rounded-2xl bg-white text-slate-400 font-bold text-sm">
+                    <div className="text-center p-8 border border-dashed border-slate-200 rounded-2xl bg-white text-slate-400 font-normal text-[14px]">
                       No direct verified recruits recorded on the blockchain yet.
                     </div>
                   ) : (
@@ -384,10 +384,10 @@ function LeaderboardRow({
                       <table className="w-full text-left">
                         <thead className="bg-[#004360]/5">
                           <tr>
-                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">User</th>
-                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Username</th>
-                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</th>
-                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Joined Date</th>
+                            <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">User</th>
+                            <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Username</th>
+                            <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone</th>
+                            <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Joined Date</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -404,21 +404,21 @@ function LeaderboardRow({
                               >
                                 <td className="px-6 py-4">
                                   <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-[#004360]/10 text-[#004360] font-black text-xs flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-lg bg-[#004360]/10 text-[#004360] font-bold text-[12px] flex items-center justify-center">
                                       {(fullName || ref.referredUser?.username || 'U').charAt(0).toUpperCase()}
                                     </div>
-                                    <span className="text-sm font-black text-[#004360]">
+                                    <span className="text-[14px] font-bold text-[#004360]">
                                       {fullName || 'Anonymous User'}
                                     </span>
                                   </div>
                                 </td>
-                                <td className="px-6 py-4 text-sm font-bold text-slate-500">
+                                <td className="px-6 py-4 text-[14px] font-normal text-slate-500">
                                   {ref.referredUser?.username ? `@${ref.referredUser.username}` : '—'}
                                 </td>
-                                <td className="px-6 py-4 text-sm font-bold text-slate-500">
+                                <td className="px-6 py-4 text-[14px] font-normal text-slate-500">
                                   {ref.referredUser?.phoneNumber || '—'}
                                 </td>
-                                <td className="px-6 py-4 text-right text-xs font-bold text-slate-400">
+                                <td className="px-6 py-4 text-right text-[12px] font-normal text-slate-400">
                                   {new Date(ref.joinTime).toLocaleDateString()}
                                 </td>
                               </motion.tr>

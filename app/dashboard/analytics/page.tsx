@@ -101,15 +101,15 @@ export default function AnalyticsPage() {
         {/* SIMPLIFIED HEADER */}
         <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pt-12">
           <div className="space-y-2">
-             <div className="flex items-center gap-2 text-[#FF6B0B] text-[10px] font-black uppercase tracking-[0.2em]">
+             <div className="flex items-center gap-2 text-[#FF6B0B] text-[10px] font-normal uppercase tracking-[0.2em]">
                 <Activity className="w-4 h-4" /> System Analytics
              </div>
-             <h1 className="text-5xl font-black tracking-tight text-[#004360]">Ecosystem <span className="text-[#FF6B0B]">Health</span></h1>
+             <h1 className="text-[36px] font-bold tracking-tight text-[#004360]">Ecosystem <span className="text-[#FF6B0B]">Health</span></h1>
           </div>
 
           <button 
             onClick={fetchAnalytics}
-            className="flex items-center gap-3 px-8 py-4 bg-[#004360] text-white rounded-2xl font-black text-xs hover:bg-[#004360]/90 transition-all shadow-xl shadow-blue-900/10 active:scale-95"
+            className="flex items-center gap-3 px-8 py-4 bg-[#004360] text-white rounded-2xl font-bold text-[14px] hover:bg-[#004360]/90 transition-all shadow-xl shadow-blue-900/10 active:scale-95"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             REFRESH DATA
@@ -128,8 +128,8 @@ export default function AnalyticsPage() {
                <div className={`w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center ${stat.color} mb-6`}>
                   <stat.icon className="w-5 h-5" />
                </div>
-               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-               <h3 className="text-4xl font-black text-[#004360] mt-2">{loading ? '—' : stat.value}</h3>
+               <p className="text-[16px] font-bold text-slate-400 uppercase tracking-tight">{stat.label}</p>
+               <h3 className="text-[36px] font-bold text-[#004360] mt-2">{loading ? '—' : stat.value}</h3>
             </div>
           ))}
         </div>
@@ -138,10 +138,10 @@ export default function AnalyticsPage() {
         <div className="p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm relative overflow-hidden">
            <div className="flex items-center justify-between mb-12">
               <div>
-                 <h4 className="text-xl font-black text-[#004360]">Referral Trajectory</h4>
-                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">7-Day Growth Flow</p>
+                 <h4 className="text-[16px] font-bold text-[#004360]">Referral Trajectory</h4>
+                 <p className="text-[12px] font-normal text-slate-400 uppercase tracking-widest mt-1">7-Day Growth Flow</p>
               </div>
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black ${trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-normal ${trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                  {trend >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                  {trend >= 0 ? '+' : ''}{trend}% v. Yesterday
               </div>
@@ -214,7 +214,7 @@ export default function AnalyticsPage() {
                   <div className="flex justify-between mt-6 px-2">
                     {growth.map(p => (
                       <div key={p.date} className="text-center">
-                        <p className="text-[10px] font-black text-[#004360]">{new Date(p.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</p>
+                        <p className="text-[10px] font-normal text-[#004360]">{new Date(p.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</p>
                       </div>
                     ))}
                   </div>
@@ -226,19 +226,19 @@ export default function AnalyticsPage() {
         {/* ONBOARDING FLOW */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
            <div className="lg:col-span-8 p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm">
-              <h4 className="text-xl font-black text-[#004360] mb-8">Onboarding Distribution</h4>
+              <h4 className="text-[16px] font-bold text-[#004360] mb-8">Onboarding Distribution</h4>
               <div className="space-y-8">
                  {onboarding.length === 0 ? (
-                   <p className="text-slate-400 font-bold italic text-sm">Waiting for new entities to join the ecosystem...</p>
+                   <p className="text-slate-400 font-normal italic text-[14px]">Waiting for new entities to join the ecosystem...</p>
                  ) : (
                    onboarding.map((stat) => {
                       const total = onboarding.reduce((a, b) => a + b.count, 0);
                       const pct = Math.round((stat.count / total) * 100);
                       return (
                         <div key={stat.status} className="space-y-3">
-                           <div className="flex justify-between items-baseline text-xs font-black uppercase tracking-widest">
+                           <div className="flex justify-between items-baseline text-[12px] font-normal uppercase tracking-widest">
                               <span className="text-slate-400">{stat.status}</span>
-                              <span className="text-[#004360]">{stat.count} <span className="text-slate-300 ml-1">({pct}%)</span></span>
+                              <span className="text-[#004360]">{stat.count} <span className="text-slate-300 ml-1 text-[10px]">({pct}%)</span></span>
                            </div>
                            <div className="h-3 bg-slate-50 rounded-full overflow-hidden">
                               <motion.div 
@@ -260,10 +260,10 @@ export default function AnalyticsPage() {
                  <div className="p-4 bg-white/10 rounded-2xl w-fit">
                     <Sparkles className="w-6 h-6 text-[#FF8F12]" />
                  </div>
-                 <h4 className="text-2xl font-black italic tracking-tight leading-tight">Ecosystem Performance Report</h4>
-                 <p className="text-white/60 text-sm font-medium leading-relaxed">System-wide conversion health is operating at peak levels. Verified entities have increased by 22% in the last tracking window.</p>
+                 <h4 className="text-[36px] font-bold italic tracking-tight leading-tight">Ecosystem Performance Report</h4>
+                 <p className="text-white/60 text-[14px] font-normal leading-relaxed">System-wide conversion health is operating at peak levels. Verified entities have increased by 22% in the last tracking window.</p>
               </div>
-              <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6B0B] hover:gap-4 transition-all mt-10">
+              <button className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.2em] text-[#FF6B0B] hover:gap-4 transition-all mt-10">
                  Export Intelligence <ArrowUpRight className="w-4 h-4" />
               </button>
            </div>

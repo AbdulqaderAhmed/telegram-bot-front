@@ -71,7 +71,7 @@ export default function SettingsPage() {
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 px-2">
         <div className="space-y-2">
            <motion.div 
-             initial={{ opacity: 0, x: -20 }}
+             initial={{ opacity: 0, x: -20 }} 
              animate={{ opacity: 1, x: 0 }}
              className="flex items-center gap-3"
            >
@@ -79,8 +79,8 @@ export default function SettingsPage() {
                 System Parameters
               </div>
            </motion.div>
-           <h1 className="text-4xl font-black tracking-tight text-[#004360]">Platform Configuration</h1>
-           <p className="text-slate-500 font-medium">
+           <h1 className="text-[36px] font-bold tracking-tight text-[#004360]">Platform Configuration</h1>
+           <p className="text-slate-500 font-normal text-[14px]">
              Dynamically control global parameters without restarting the bot module.
            </p>
         </div>
@@ -94,8 +94,8 @@ export default function SettingsPage() {
                   <SettingsIcon className="w-6 h-6 text-[#004360]" />
                </div>
                <div>
-                  <h2 className="text-xl font-black text-[#004360]">Bot & Verification Settings</h2>
-                  <p className="text-xs font-bold text-slate-400">Live configuration variables</p>
+                  <h2 className="text-[16px] font-bold text-[#004360]">Bot & Verification Settings</h2>
+                  <p className="text-[12px] font-normal text-slate-400">Live configuration variables</p>
                </div>
             </div>
          </div>
@@ -107,7 +107,7 @@ export default function SettingsPage() {
                     initial={{ opacity: 0, height: 0 }} 
                     animate={{ opacity: 1, height: 'auto' }} 
                     exit={{ opacity: 0, height: 0 }}
-                    className="p-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-sm font-bold flex items-center gap-3"
+                    className="p-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-[14px] font-bold flex items-center gap-3"
                   >
                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
                      {error}
@@ -118,7 +118,7 @@ export default function SettingsPage() {
                     initial={{ opacity: 0, height: 0 }} 
                     animate={{ opacity: 1, height: 'auto' }} 
                     exit={{ opacity: 0, height: 0 }}
-                    className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-2xl text-sm font-bold flex items-center gap-3"
+                    className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-2xl text-[14px] font-bold flex items-center gap-3"
                   >
                      <ShieldCheck className="w-5 h-5 flex-shrink-0" />
                      Configuration safely persisted to the database.
@@ -137,8 +137,8 @@ export default function SettingsPage() {
                  {settings.map((setting) => (
                    <div key={setting.key} className="space-y-3">
                      <label className="flex flex-col gap-1">
-                        <span className="text-xs font-black text-[#004360] uppercase tracking-widest">{setting.key.replace(/_/g, ' ')}</span>
-                        <span className="text-[10px] font-bold text-slate-400">{setting.description}</span>
+                        <span className="text-[12px] font-bold text-[#004360] uppercase tracking-widest">{setting.key.replace(/_/g, ' ')}</span>
+                        <span className="text-[12px] font-normal text-slate-400">{setting.description}</span>
                      </label>
                      <div className="relative group">
                         {setting.key.includes('DELAY') ? (
@@ -150,7 +150,7 @@ export default function SettingsPage() {
                            type="text"
                            value={setting.value}
                            onChange={(e) => handleChange(setting.key, e.target.value)}
-                           className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-mono text-sm font-bold rounded-2xl auto-transition py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
+                           className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-mono text-[14px] font-normal rounded-2xl auto-transition py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
                         />
                      </div>
                    </div>
@@ -170,7 +170,7 @@ export default function SettingsPage() {
                <button
                   type="submit"
                   disabled={loading || saving}
-                  className="flex items-center gap-3 px-8 py-4 bg-[#FF6B0B] text-white rounded-2xl font-black shadow-xl shadow-[#FF6B0B]/20 hover:-translate-y-1 transition-all disabled:opacity-50 active:scale-95"
+                  className="flex items-center gap-3 px-8 py-4 bg-[#FF6B0B] text-white rounded-2xl font-bold text-[14px] shadow-xl shadow-[#FF6B0B]/20 hover:-translate-y-1 transition-all disabled:opacity-50 active:scale-95"
                >
                   {saving ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                   Save Configuration
