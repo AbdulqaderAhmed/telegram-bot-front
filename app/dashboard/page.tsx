@@ -258,24 +258,24 @@ export default function DashboardOverview() {
               {[
                 {
                   label: "Verified",
-                  value: referralStats.verified,
-                  total: referralStats.total,
-                  color: "bg-blue-500",
+                  value: referralStats.verified || 0,
+                  total: referralStats.total || 1,
+                  color: "bg-[#004360]",
                 },
                 {
                   label: "Pending",
-                  value: referralStats.pending,
-                  total: referralStats.total,
-                  color: "bg-amber-500",
+                  value: referralStats.pending || 0,
+                  total: referralStats.total || 1,
+                  color: "bg-[#FF6B0B]",
                 },
                 {
                   label: "Left",
-                  value: referralStats.left,
-                  total: referralStats.total,
-                  color: "bg-foreground/20",
+                  value: referralStats.left || 0,
+                  total: referralStats.total || 1,
+                  color: "bg-[#FF8F12]",
                 },
               ].map((row) => {
-                const pct = Math.round((row.value / row.total) * 100);
+                const pct = Math.round((row.value / Math.max(row.total, 1)) * 100) || 0;
                 return (
                   <div key={row.label} className="space-y-2">
                     <div className="flex items-center justify-between text-sm font-bold">
@@ -300,7 +300,7 @@ export default function DashboardOverview() {
               <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-foreground/10">
                 <div className="text-center">
                   <p className="text-3xl font-black text-foreground font-mono">
-                    {referralStats.conversionRate}%
+                    {referralStats.conversionRate || 0}%
                   </p>
                   <p className="text-xs font-bold text-foreground/50 uppercase tracking-widest mt-1">
                     Conversion
@@ -308,7 +308,7 @@ export default function DashboardOverview() {
                 </div>
                 <div className="text-center">
                   <p className="text-3xl font-black text-foreground font-mono">
-                    {referralStats.total}
+                    {referralStats.total || 0}
                   </p>
                   <p className="text-xs font-bold text-foreground/50 uppercase tracking-widest mt-1">
                     Total
@@ -316,7 +316,7 @@ export default function DashboardOverview() {
                 </div>
                 <div className="text-center">
                   <p className="text-3xl font-black text-foreground font-mono">
-                    {referralStats.pending}
+                    {referralStats.pending || 0}
                   </p>
                   <p className="text-xs font-bold text-foreground/50 uppercase tracking-widest mt-1">
                     Pending
