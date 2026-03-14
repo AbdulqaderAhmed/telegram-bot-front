@@ -14,8 +14,12 @@ import {
   Crown,
   Medal,
   Calendar,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
+  Loader2,
+  Users
 } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
 import * as XLSX from 'xlsx';
 
@@ -36,6 +40,7 @@ export default function ReportsPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const fetchLeaderboard = async () => {
     setLoading(true);
@@ -54,6 +59,10 @@ export default function ReportsPage() {
   useEffect(() => {
     fetchLeaderboard();
   }, []);
+
+  const toggleRow = (userId: number) => {
+    setExpandedRow(prev => prev === userId ? null : userId);
+  };
 
   const exportToExcel = () => {
     if (leaderboard.length === 0) return;
@@ -214,57 +223,15 @@ export default function ReportsPage() {
                 </tr>
               ) : (
                 leaderboard.map((entry, i) => (
-                  <motion.tr
+                  <LeaderboardRow 
                     key={entry.user.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="hover:bg-amber-500/[0.02] transition-colors group cursor-pointer"
-                  >
-                    <td className="pl-10 pr-6 py-8">
-                       <div className="flex items-center gap-4">
-                          {getMedalIcon(entry.rank)}
-                       </div>
-                    </td>
-                    <td className="px-6 py-8">
-                       <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xs font-black shadow-lg shadow-blue-900/10 ${i < 3 ? 'bg-[#004360]' : 'bg-slate-300'}`}>
-                             {entry.user.username?.charAt(0).toUpperCase() || entry.user.telegramId.charAt(0)}
-                          </div>
-                          <div className="flex flex-col">
-                             <span className="text-sm font-black text-[#004360]">@{entry.user.username || entry.user.telegramId}</span>
-                             <span className="text-[10px] font-bold text-slate-400">{entry.user.firstName || 'Anonymous Member'}</span>
-                          </div>
-                       </div>
-                    </td>
-                    <td className="px-6 py-8">
-                       <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-black text-[#004360] font-mono">{entry.referralCount}</span>
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pts</span>
-                       </div>
-                    </td>
-                    <td className="px-6 py-8">
-                       <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                         entry.user.onboardingStatus === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-slate-100 text-slate-400 border-slate-200'
-                       }`}>
-                          {entry.user.onboardingStatus}
-                       </span>
-                    </td>
-                    <td className="px-6 py-8">
-                       <div className="w-full max-w-[120px] h-2 bg-slate-100 rounded-full overflow-hidden">
-                          <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min(100, (entry.referralCount / (leaderboard[0]?.referralCount || 1)) * 100)}%` }}
-                            className={`h-full rounded-full ${i === 0 ? 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-lg shadow-amber-500/40' : 'bg-blue-500'}`}
-                          />
-                       </div>
-                    </td>
-                    <td className="pr-10 pl-6 py-8 text-right">
-                       <button className="p-3 glass rounded-xl text-slate-300 hover:text-[#004360] hover:border-[#004360]/20 transition-all opacity-0 group-hover:opacity-100">
-                          <ChevronRight className="w-5 h-5" />
-                       </button>
-                    </td>
-                  </motion.tr>
+                    entry={entry}
+                    index={i}
+                    isExpanded={expandedRow === entry.user.id}
+                    onToggle={() => toggleRow(entry.user.id)}
+                    maxReferrals={leaderboard[0]?.referralCount || 1}
+                    getMedalIcon={getMedalIcon}
+                  />
                 ))
               )}
             </tbody>
@@ -272,5 +239,159 @@ export default function ReportsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LeaderboardRow({ 
+  entry, 
+  index, 
+  isExpanded, 
+  onToggle, 
+  maxReferrals, 
+  getMedalIcon 
+}: { 
+  entry: LeaderboardEntry; 
+  index: number; 
+  isExpanded: boolean; 
+  onToggle: () => void;
+  maxReferrals: number;
+  getMedalIcon: (rank: number) => React.ReactNode;
+}) {
+  const [referredUsers, setReferredUsers] = useState<any[]>([]);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
+
+  useEffect(() => {
+    if (isExpanded && !hasFetched) {
+      setLoadingDetails(true);
+      api.get(`/referrals/user/${entry.user.id}`)
+        .then(({ data }) => {
+          setReferredUsers(data.list || []);
+          setHasFetched(true);
+        })
+        .catch(err => {
+          console.error(err);
+          setReferredUsers([]);
+        })
+        .finally(() => {
+          setLoadingDetails(false);
+        });
+    }
+  }, [isExpanded, hasFetched, entry.user.id]);
+
+  const performancePct = Math.min(100, (entry.referralCount / maxReferrals) * 100);
+
+  return (
+    <React.Fragment>
+      <motion.tr
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.05 }}
+        onClick={onToggle}
+        className={`hover:bg-amber-500/[0.04] transition-colors group cursor-pointer ${isExpanded ? 'bg-slate-50' : ''}`}
+      >
+        <td className="pl-10 pr-6 py-8">
+           <div className="flex items-center gap-4">
+              {getMedalIcon(entry.rank)}
+           </div>
+        </td>
+        <td className="px-6 py-8">
+           <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xs font-black shadow-lg shadow-blue-900/10 ${index < 3 ? 'bg-[#004360]' : 'bg-slate-300'}`}>
+                 {entry.user.username?.charAt(0).toUpperCase() || entry.user.telegramId.charAt(0)}
+              </div>
+              <div className="flex flex-col">
+                 <span className="text-sm font-black text-[#004360]">@{entry.user.username || entry.user.telegramId}</span>
+                 <span className="text-[10px] font-bold text-slate-400">{entry.user.firstName || 'Anonymous Member'}</span>
+              </div>
+           </div>
+        </td>
+        <td className="px-6 py-8">
+           <div className="flex items-baseline gap-1">
+              <span className="text-3xl font-black text-[#004360] font-mono">{entry.referralCount}</span>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pts</span>
+           </div>
+        </td>
+        <td className="px-6 py-8">
+           <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+             entry.user.onboardingStatus === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-slate-100 text-slate-400 border-slate-200'
+           }`}>
+              {entry.user.onboardingStatus}
+           </span>
+        </td>
+        <td className="px-6 py-8">
+           <div className="flex items-center gap-3">
+             <div className="w-full max-w-[120px] h-2 bg-slate-100 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${performancePct}%` }}
+                  className={`h-full rounded-full ${index === 0 ? 'bg-gradient-to-r from-[#FF8F12] to-[#FF6B0B] shadow-lg shadow-[#FF6B0B]/40' : 'bg-[#004360]'}`}
+                />
+             </div>
+             <span className="text-[10px] font-black text-slate-400 w-8">{Math.round(performancePct)}%</span>
+           </div>
+        </td>
+        <td className="pr-10 pl-6 py-8 text-right">
+           <button className={`p-3 glass rounded-xl transition-all ${isExpanded ? 'bg-[#004360]/10 text-[#004360] border-[#004360]/20' : 'text-slate-300 hover:text-[#004360] hover:border-[#004360]/20 opacity-0 group-hover:opacity-100'}`}>
+              {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+           </button>
+        </td>
+      </motion.tr>
+      
+      <AnimatePresence>
+        {isExpanded && (
+          <tr>
+            <td colSpan={6} className="p-0 border-b border-slate-100 bg-slate-50/50">
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden shadow-inner"
+              >
+                <div className="p-10">
+                  <h4 className="flex items-center gap-2 text-sm font-black text-[#004360] uppercase tracking-widest mb-6 border-b border-slate-200 pb-4">
+                    <Users className="w-4 h-4 text-[#FF6B0B]" /> Recruited Network ({entry.referralCount})
+                  </h4>
+                  
+                  {loadingDetails ? (
+                    <div className="flex items-center justify-center gap-3 text-[#004360] font-bold p-8">
+                      <Loader2 className="w-5 h-5 animate-spin text-[#FF6B0B]" /> Loading network connections...
+                    </div>
+                  ) : referredUsers.length === 0 ? (
+                    <div className="text-center p-8 border border-dashed border-slate-200 rounded-2xl bg-white text-slate-400 font-bold text-sm">
+                      No direct verified recruits recorded on the blockchain yet.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {referredUsers.map((ref: any, idx) => (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.02 }}
+                          key={ref.id} 
+                          className="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-2xl hover:border-[#FF6B0B]/30 hover:shadow-lg hover:shadow-[#FF6B0B]/5 transition-all group"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-[#004360]/5 text-[#004360] font-black text-sm flex items-center justify-center group-hover:bg-[#FF6B0B] group-hover:text-white transition-all">
+                            {(ref.referredUser?.username || ref.referredUser?.firstName || 'A').charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="text-sm font-black text-[#004360]">
+                              {ref.referredUser?.firstName ? `${ref.referredUser.firstName}` : `@${ref.referredUser?.username || ref.referredUser?.telegramId}`}
+                            </p>
+                            <p className="text-[10px] font-bold text-slate-400">
+                              Joined {new Date(ref.joinTime).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </td>
+          </tr>
+        )}
+      </AnimatePresence>
+    </React.Fragment>
   );
 }
