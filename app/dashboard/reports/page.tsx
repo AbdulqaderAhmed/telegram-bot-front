@@ -30,8 +30,12 @@ interface LeaderboardEntry {
     id: number;
     username: string;
     firstName: string;
+    lastName: string | null;
     telegramId: string;
+    phoneNumber: string | null;
     onboardingStatus: string;
+    role: string | null;
+    EmpID: string | null;
     createdAt: string;
   };
 }
@@ -68,14 +72,22 @@ export default function ReportsPage() {
     if (leaderboard.length === 0) return;
     setExporting(true);
     try {
-      const exportData = leaderboard.map(entry => ({
-        Rank: entry.rank,
-        'Username / ID': entry.user?.username || entry.user?.telegramId || '—',
-        'First Name': entry.user?.firstName || '—',
-        'Verified Referrals': entry.referralCount,
-        'Onboarding Status': entry.user?.onboardingStatus || '—',
-        'Joined At': entry.user?.createdAt ? new Date(entry.user.createdAt).toLocaleDateString() : '—'
-      }));
+      const exportData = leaderboard.map(entry => {
+        const fullName = [entry.user?.firstName, entry.user?.lastName].filter(Boolean).join(' ');
+        
+        // SECURITY COMPLIANCE: Including PII (Phone Number) as per explicit business requirement for administrative reporting.
+        return {
+          Rank: entry.rank,
+          'Full Name': fullName || '—',
+          'Phone Number': entry.user?.phoneNumber || '—',
+          'Role': entry.user?.role || '—',
+          'Employee ID': entry.user?.EmpID || '—',
+          'Username / ID': entry.user?.username ? `@${entry.user.username}` : (entry.user?.telegramId || '—'),
+          'Verified Referrals': entry.referralCount,
+          'Onboarding Status': entry.user?.onboardingStatus || '—',
+          'Joined At': entry.user?.createdAt ? new Date(entry.user.createdAt).toLocaleDateString() : '—'
+        };
+      });
 
       const ws = XLSX.utils.json_to_sheet(exportData);
       const wb = XLSX.utils.book_new();
@@ -196,6 +208,7 @@ export default function ReportsPage() {
               <tr className="border-b border-slate-100">
                 <th className="pl-10 pr-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-24">Rank</th>
                 <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Champion Account</th>
+                <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Phone Number</th>
                 <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Verified Score</th>
                 <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Onboarding</th>
                 <th className="px-6 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Performance Index</th>
@@ -206,14 +219,14 @@ export default function ReportsPage() {
               {loading ? (
                 [...Array(6)].map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td colSpan={6} className="px-10 py-8">
+                    <td colSpan={7} className="px-10 py-8">
                       <div className="h-4 bg-slate-100 rounded-full w-full" />
                     </td>
                   </tr>
                 ))
               ) : leaderboard.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-10 py-24 text-center">
+                  <td colSpan={7} className="px-10 py-24 text-center">
                     <div className="flex flex-col items-center gap-4 opacity-30 grayscale">
                        <Trophy className="w-16 h-16" />
                        <p className="text-lg font-black text-slate-500">The leaderboard is currently empty.</p>
@@ -298,13 +311,18 @@ function LeaderboardRow({
         <td className="px-6 py-8">
            <div className="flex items-center gap-4">
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xs font-black shadow-lg shadow-blue-900/10 ${index < 3 ? 'bg-[#004360]' : 'bg-slate-300'}`}>
-                 {entry.user.username?.charAt(0).toUpperCase() || entry.user.telegramId.charAt(0)}
+                 {entry.user.firstName?.charAt(0).toUpperCase() || entry.user.username?.charAt(0).toUpperCase() || entry.user.telegramId.charAt(0)}
               </div>
               <div className="flex flex-col">
-                 <span className="text-sm font-black text-[#004360]">@{entry.user.username || entry.user.telegramId}</span>
-                 <span className="text-[10px] font-bold text-slate-400">{entry.user.firstName || 'Anonymous Member'}</span>
+                 <span className="text-sm font-black text-[#004360]">
+                   {[entry.user.firstName, entry.user.lastName].filter(Boolean).join(' ') || entry.user.username || `@${entry.user.telegramId}`}
+                 </span>
+                 {entry.user.username && <span className="text-[10px] font-bold text-slate-400">@{entry.user.username}</span>}
               </div>
            </div>
+        </td>
+        <td className="px-6 py-8">
+           <span className="text-sm font-bold text-slate-500">{entry.user.phoneNumber || '—'}</span>
         </td>
         <td className="px-6 py-8">
            <div className="flex items-baseline gap-1">
@@ -341,7 +359,7 @@ function LeaderboardRow({
       <AnimatePresence>
         {isExpanded && (
           <tr>
-            <td colSpan={6} className="p-0 border-b border-slate-100 bg-slate-50/50">
+            <td colSpan={7} className="p-0 border-b border-slate-100 bg-slate-50/50">
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
@@ -362,28 +380,52 @@ function LeaderboardRow({
                       No direct verified recruits recorded on the blockchain yet.
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {referredUsers.map((ref: any, idx) => (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: idx * 0.02 }}
-                          key={ref.id} 
-                          className="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-2xl hover:border-[#FF6B0B]/30 hover:shadow-lg hover:shadow-[#FF6B0B]/5 transition-all group"
-                        >
-                          <div className="w-10 h-10 rounded-xl bg-[#004360]/5 text-[#004360] font-black text-sm flex items-center justify-center group-hover:bg-[#FF6B0B] group-hover:text-white transition-all">
-                            {(ref.referredUser?.username || ref.referredUser?.firstName || 'A').charAt(0).toUpperCase()}
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="text-sm font-black text-[#004360]">
-                              {ref.referredUser?.firstName ? `${ref.referredUser.firstName}` : `@${ref.referredUser?.username || ref.referredUser?.telegramId}`}
-                            </p>
-                            <p className="text-[10px] font-bold text-slate-400">
-                              Joined {new Date(ref.joinTime).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </motion.div>
-                      ))}
+                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+                      <table className="w-full text-left">
+                        <thead className="bg-[#004360]/5">
+                          <tr>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">User</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Username</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Joined Date</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {referredUsers.map((ref: any, idx) => {
+                            const fullName = [ref.referredUser?.firstName, ref.referredUser?.lastName].filter(Boolean).join(' ');
+                            
+                            return (
+                              <motion.tr 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.02 }}
+                                key={ref.id}
+                                className="hover:bg-[#FF6B0B]/[0.02] transition-colors"
+                              >
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-[#004360]/10 text-[#004360] font-black text-xs flex items-center justify-center">
+                                      {(fullName || ref.referredUser?.username || 'U').charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="text-sm font-black text-[#004360]">
+                                      {fullName || 'Anonymous User'}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 text-sm font-bold text-slate-500">
+                                  {ref.referredUser?.username ? `@${ref.referredUser.username}` : '—'}
+                                </td>
+                                <td className="px-6 py-4 text-sm font-bold text-slate-500">
+                                  {ref.referredUser?.phoneNumber || '—'}
+                                </td>
+                                <td className="px-6 py-4 text-right text-xs font-bold text-slate-400">
+                                  {new Date(ref.joinTime).toLocaleDateString()}
+                                </td>
+                              </motion.tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </div>
