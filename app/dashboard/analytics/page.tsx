@@ -17,7 +17,10 @@ import {
   Layers,
   Sparkles,
   MousePointer2,
-  CalendarDays
+  CalendarDays,
+  Clock,
+  ShieldCheck,
+  UserCheck
 } from 'lucide-react';
 import api from '@/lib/axios';
 
@@ -38,23 +41,47 @@ interface OnboardingStat {
   count: number;
 }
 
+interface RoleStat {
+  role: string;
+  count: number;
+}
+
+interface RetentionStat {
+  status: string;
+  count: number;
+}
+
+interface HourlyPoint {
+  hour: number;
+  count: number;
+}
+
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState<Overview | null>(null);
   const [growth, setGrowth] = useState<GrowthPoint[]>([]);
   const [onboarding, setOnboarding] = useState<OnboardingStat[]>([]);
+  const [roles, setRoles] = useState<RoleStat[]>([]);
+  const [retention, setRetention] = useState<RetentionStat[]>([]);
+  const [hourly, setHourly] = useState<HourlyPoint[]>([]);
 
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      const [ovRes, grRes, obRes] = await Promise.all([
+      const [ovRes, grRes, obRes, rlRes, rtRes, hrRes] = await Promise.all([
         api.get('/analytics/overview'),
         api.get('/analytics/growth'),
-        api.get('/analytics/onboarding')
+        api.get('/analytics/onboarding'),
+        api.get('/analytics/roles'),
+        api.get('/analytics/retention'),
+        api.get('/analytics/activity')
       ]);
       setOverview(ovRes.data);
       setGrowth(grRes.data);
       setOnboarding(obRes.data);
+      setRoles(rlRes.data);
+      setRetention(rtRes.data);
+      setHourly(hrRes.data);
     } catch (err) {
       console.error('Error fetching analytics:', err);
     } finally {
@@ -66,7 +93,8 @@ export default function AnalyticsPage() {
     fetchAnalytics();
   }, []);
 
-  const maxValue = Math.max(...growth.map(p => p.count), 5); // Fallback to 5 for scale
+  const maxValue = Math.max(...growth.map(p => p.count), 5);
+  const maxHourlyValue = Math.max(...hourly.map(p => p.count), 5);
 
   const calculateTrend = () => {
     if (growth.length < 2) return 0;
@@ -78,33 +106,36 @@ export default function AnalyticsPage() {
 
   const trend = calculateTrend();
 
-  // Graph Helpers
-  const chartHeight = 300;
-  const chartWidth = 1200;
-  const points = growth.map((p, i) => ({
-    x: (i / Math.max(growth.length - 1, 1)) * chartWidth,
-    y: chartHeight - (p.count / maxValue) * chartHeight
+  // Graph Helpers for Referral Trajectory
+  const chartHeight = 200;
+  const chartWidth = 800;
+  const getPoints = (data: any[], max: number) => data.map((p, i) => ({
+    x: (i / Math.max(data.length - 1, 1)) * chartWidth,
+    y: chartHeight - (p.count / max) * chartHeight
   }));
 
-  const pathD = points.length > 0 
+  const trajectoryPoints = getPoints(growth, maxValue);
+  const hourlyPoints = getPoints(hourly, maxHourlyValue);
+
+  const getPath = (points: any[]) => points.length > 0 
     ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ')
     : '';
 
-  const areaD = points.length > 0
-    ? `${pathD} L ${points[points.length - 1].x} ${chartHeight} L ${points[0].x} ${chartHeight} Z`
+  const getArea = (points: any[], path: string) => points.length > 0
+    ? `${path} L ${points[points.length - 1].x} ${chartHeight} L ${points[0].x} ${chartHeight} Z`
     : '';
 
   return (
     <div className="min-h-screen bg-white text-[#004360] pb-20">
       <div className="max-w-[1400px] mx-auto space-y-12 px-6">
         
-        {/* SIMPLIFIED HEADER */}
+        {/* HEADER */}
         <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pt-12">
           <div className="space-y-2">
              <div className="flex items-center gap-2 text-[#FF6B0B] text-[10px] font-normal uppercase tracking-[0.2em]">
-                <Activity className="w-4 h-4" /> System Analytics
+                <Activity className="w-4 h-4" /> Comprehensive Intelligence
              </div>
-             <h1 className="text-[36px] font-bold tracking-tight text-[#004360]">Ecosystem <span className="text-[#FF6B0B]">Health</span></h1>
+             <h1 className="text-[36px] font-bold tracking-tight text-[#004360]">Growth <span className="text-[#FF6B0B]">& Behavior</span></h1>
           </div>
 
           <button 
@@ -112,7 +143,7 @@ export default function AnalyticsPage() {
             className="flex items-center gap-3 px-8 py-4 bg-[#004360] text-white rounded-2xl font-bold text-[14px] hover:bg-[#004360]/90 transition-all shadow-xl shadow-blue-900/10 active:scale-95"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            REFRESH DATA
+            REFRESH ANALYTICS
           </button>
         </header>
 
@@ -134,141 +165,153 @@ export default function AnalyticsPage() {
           ))}
         </div>
 
-        {/* GRAPH SECTION */}
-        <div className="p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm relative overflow-hidden">
-           <div className="flex items-center justify-between mb-12">
-              <div>
-                 <h4 className="text-[16px] font-bold text-[#004360]">Referral Trajectory</h4>
-                 <p className="text-[12px] font-normal text-slate-400 uppercase tracking-widest mt-1">7-Day Growth Flow</p>
-              </div>
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-normal ${trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                 {trend >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                 {trend >= 0 ? '+' : ''}{trend}% v. Yesterday
-              </div>
-           </div>
-
-           <div className="relative h-[300px] w-full group">
-              {loading ? (
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <RefreshCw className="w-8 h-8 text-[#004360]/20 animate-spin" />
+        {/* MAIN CHARTS GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Referral Trajectory */}
+            <div className="p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm relative overflow-hidden group">
+                <div className="flex items-center justify-between mb-10">
+                    <div>
+                        <h4 className="text-[16px] font-bold text-[#004360]">Referral Trajectory</h4>
+                        <p className="text-[12px] font-normal text-slate-400 uppercase tracking-widest mt-1">7-Day Growth Flow</p>
+                    </div>
+                    <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-normal ${trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                        {trend >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                        {trend >= 0 ? '+' : ''}{trend}%
+                    </div>
                 </div>
-              ) : growth.length === 0 ? (
-                <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-bold uppercase tracking-widest italic bg-slate-50 rounded-3xl">
-                   No tracking data available
+                <div className="relative h-[200px] w-full">
+                    <ChartSVG points={trajectoryPoints} path={getPath(trajectoryPoints)} area={getArea(trajectoryPoints, getPath(trajectoryPoints))} color="#004360" />
                 </div>
-              ) : (
-                <>
-                  <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full h-full overflow-visible">
-                    {/* Grid Lines */}
-                    {[0, 0.25, 0.5, 0.75, 1].map(v => (
-                      <line 
-                        key={v} 
-                        x1="0" 
-                        y1={chartHeight * v} 
-                        x2={chartWidth} 
-                        y2={chartHeight * v} 
-                        stroke="#f1f5f9" 
-                        strokeWidth="1" 
-                      />
-                    ))}
-                    
-                    {/* Area Gradient */}
-                    <defs>
-                      <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#004360" stopOpacity="0.1" />
-                        <stop offset="100%" stopColor="#004360" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d={areaD} fill="url(#areaGradient)" />
-                    
-                    {/* Main Line */}
-                    <motion.path 
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ duration: 2, ease: "easeInOut" }}
-                      d={pathD} 
-                      fill="none" 
-                      stroke="#004360" 
-                      strokeWidth="4" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                    />
-
-                    {/* Points */}
-                    {points.map((p, i) => (
-                      <g key={i} className="cursor-pointer group/dot">
-                        <circle 
-                          cx={p.x} 
-                          cy={p.y} 
-                          r="6" 
-                          fill="#ffffff" 
-                          stroke="#FF6B0B" 
-                          strokeWidth="3" 
-                          className="transition-all group-hover/dot:r-8"
-                        />
-                      </g>
-                    ))}
-                  </svg>
-
-                  {/* Date labels */}
-                  <div className="flex justify-between mt-6 px-2">
+                <div className="flex justify-between mt-6 px-2">
                     {growth.map(p => (
-                      <div key={p.date} className="text-center">
-                        <p className="text-[10px] font-normal text-[#004360]">{new Date(p.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</p>
-                      </div>
+                        <p key={p.date} className="text-[10px] font-normal text-slate-400">{new Date(p.date).getDate()}/{new Date(p.date).getMonth() + 1}</p>
                     ))}
-                  </div>
-                </>
-              )}
-           </div>
+                </div>
+            </div>
+
+            {/* Engagement Pulse (Hourly) */}
+            <div className="p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm relative overflow-hidden group">
+                <div className="flex items-center justify-between mb-10">
+                    <div>
+                        <h4 className="text-[16px] font-bold text-[#004360]">Hourly Engagement</h4>
+                        <p className="text-[12px] font-normal text-slate-400 uppercase tracking-widest mt-1">Join Activity Pulse</p>
+                    </div>
+                    <div className="bg-slate-50 p-2 rounded-xl">
+                        <Clock className="w-4 h-4 text-blue-500" />
+                    </div>
+                </div>
+                <div className="relative h-[200px] w-full">
+                    <ChartSVG points={hourlyPoints} path={getPath(hourlyPoints)} area={getArea(hourlyPoints, getPath(hourlyPoints))} color="#FF6B0B" />
+                </div>
+                <div className="flex justify-between mt-6 px-2">
+                    {[0, 6, 12, 18, 23].map(h => (
+                        <p key={h} className="text-[10px] font-normal text-slate-400">{h}:00</p>
+                    ))}
+                </div>
+            </div>
         </div>
 
-        {/* ONBOARDING FLOW */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-           <div className="lg:col-span-8 p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm">
-              <h4 className="text-[16px] font-bold text-[#004360] mb-8">Onboarding Distribution</h4>
-              <div className="space-y-8">
-                 {onboarding.length === 0 ? (
-                   <p className="text-slate-400 font-normal italic text-[14px]">Waiting for new entities to join the ecosystem...</p>
-                 ) : (
-                   onboarding.map((stat) => {
-                      const total = onboarding.reduce((a, b) => a + b.count, 0);
-                      const pct = Math.round((stat.count / total) * 100);
-                      return (
-                        <div key={stat.status} className="space-y-3">
-                           <div className="flex justify-between items-baseline text-[12px] font-normal uppercase tracking-widest">
-                              <span className="text-slate-400">{stat.status}</span>
-                              <span className="text-[#004360]">{stat.count} <span className="text-slate-300 ml-1 text-[10px]">({pct}%)</span></span>
-                           </div>
-                           <div className="h-3 bg-slate-50 rounded-full overflow-hidden">
-                              <motion.div 
-                                initial={{ width: 0 }}
-                                animate={{ width: `${pct}%` }}
-                                transition={{ duration: 1, ease: 'circOut' }}
-                                className={`h-full rounded-full ${stat.status === 'COMPLETED' ? 'bg-[#004360]' : 'bg-[#FF6B0B]'}`}
-                              />
-                           </div>
-                        </div>
-                      );
-                   })
-                 )}
-              </div>
-           </div>
+        {/* BOTTOM SEGMENTATION GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Onboarding Distribution */}
+            <div className="p-10 bg-white border border-slate-100 rounded-[3.5rem] shadow-sm">
+                <h4 className="text-[16px] font-bold text-[#004360] mb-8 flex items-center gap-3">
+                   <Target className="w-5 h-5 text-emerald-500" /> Onboarding
+                </h4>
+                <div className="space-y-6">
+                    {onboarding.map((stat) => {
+                        const total = onboarding.reduce((a, b) => a + b.count, 0) || 1;
+                        const pct = Math.round((stat.count / total) * 100);
+                        return (
+                            <ProgressBar key={stat.status} label={stat.status} count={stat.count} pct={pct} color={stat.status === 'COMPLETED' ? 'bg-[#004360]' : 'bg-[#FF6B0B]'} />
+                        );
+                    })}
+                </div>
+            </div>
 
-           <div className="lg:col-span-4 p-10 bg-[#004360] rounded-[3rem] text-white flex flex-col justify-between shadow-2xl shadow-blue-900/20">
-              <div className="space-y-6">
-                 <div className="p-4 bg-white/10 rounded-2xl w-fit">
-                    <Sparkles className="w-6 h-6 text-[#FF8F12]" />
-                 </div>
-                 <h4 className="text-[36px] font-bold italic tracking-tight leading-tight">Ecosystem Performance Report</h4>
-                 <p className="text-white/60 text-[14px] font-normal leading-relaxed">System-wide conversion health is operating at peak levels. Verified entities have increased by 22% in the last tracking window.</p>
-              </div>
-              <button className="flex items-center gap-2 text-[10px] font-normal uppercase tracking-[0.2em] text-[#FF6B0B] hover:gap-4 transition-all mt-10">
-                 Export Intelligence <ArrowUpRight className="w-4 h-4" />
-              </button>
-           </div>
+            {/* Role Segmentation */}
+            <div className="p-10 bg-white border border-slate-100 rounded-[3.5rem] shadow-sm">
+                <h4 className="text-[16px] font-bold text-[#004360] mb-8 flex items-center gap-3">
+                   <Users className="w-5 h-5 text-blue-600" /> Role Distribution
+                </h4>
+                <div className="space-y-6">
+                    {roles.map((stat) => {
+                        const total = roles.reduce((a, b) => a + b.count, 0) || 1;
+                        const pct = Math.round((stat.count / total) * 100);
+                        return (
+                            <ProgressBar key={stat.role} label={stat.role} count={stat.count} pct={pct} color={stat.role === 'STAFF' ? 'bg-[#004360]' : 'bg-blue-400'} />
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Referral Status (Retention) */}
+            <div className="p-10 bg-white border border-slate-100 rounded-[3.5rem] shadow-sm">
+                <h4 className="text-[16px] font-bold text-[#004360] mb-8 flex items-center gap-3">
+                   <ShieldCheck className="w-5 h-5 text-[#FF8F12]" /> Status Health
+                </h4>
+                <div className="space-y-6">
+                    {retention.map((stat) => {
+                        const total = retention.reduce((a, b) => a + b.count, 0) || 1;
+                        const pct = Math.round((stat.count / total) * 100);
+                        const colorMap: any = {
+                            verified: 'bg-emerald-500',
+                            pending: 'bg-[#FF6B0B]',
+                            left: 'bg-slate-300'
+                        };
+                        return (
+                            <ProgressBar key={stat.status} label={stat.status} count={stat.count} pct={pct} color={colorMap[stat.status] || 'bg-slate-400'} />
+                        );
+                    })}
+                </div>
+            </div>
         </div>
       </div>
     </div>
   );
+}
+
+function ChartSVG({ points, path, area, color }: any) {
+    return (
+        <svg viewBox="0 0 800 200" className="w-full h-full overflow-visible">
+            <defs>
+                <linearGradient id={`grad-${color}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={color} stopOpacity="0.15" />
+                    <stop offset="100%" stopColor={color} stopOpacity="0" />
+                </linearGradient>
+            </defs>
+            <path d={area} fill={`url(#grad-${color})`} />
+            <motion.path 
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
+                d={path} 
+                fill="none" 
+                stroke={color} 
+                strokeWidth="3" 
+                strokeLinecap="round" 
+            />
+            {points.map((p: any, i: number) => (
+                <circle key={i} cx={p.x} cy={p.y} r="4" fill="white" stroke={color} strokeWidth="2" />
+            ))}
+        </svg>
+    );
+}
+
+function ProgressBar({ label, count, pct, color }: any) {
+    return (
+        <div className="space-y-2">
+            <div className="flex justify-between items-baseline text-[11px] font-bold uppercase tracking-widest">
+                <span className="text-slate-400">{label}</span>
+                <span className="text-[#004360]">{count} <span className="text-slate-300 ml-1">({pct}%)</span></span>
+            </div>
+            <div className="h-2.5 bg-slate-50 rounded-full overflow-hidden">
+                <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pct}%` }}
+                    className={`h-full rounded-full ${color}`}
+                />
+            </div>
+        </div>
+    );
 }
