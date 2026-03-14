@@ -212,7 +212,7 @@ export default function ReportsPage() {
                 <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Verified Score</th>
                 <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Onboarding</th>
                 <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Performance Index</th>
-                <th className="pr-10 pl-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-right">Progress</th>
+                <th className="pr-10 pl-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-right">Network</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -350,7 +350,7 @@ function LeaderboardRow({
            </div>
         </td>
         <td className="pr-10 pl-6 py-8 text-right">
-           <button className={`p-3 glass rounded-xl transition-all ${isExpanded ? 'bg-[#004360]/10 text-[#004360] border-[#004360]/20' : 'text-slate-300 hover:text-[#004360] hover:border-[#004360]/20 opacity-0 group-hover:opacity-100'}`}>
+           <button className={`p-3 glass rounded-xl transition-all shadow-sm ${isExpanded ? 'bg-[#004360] text-white' : 'text-[#004360] bg-[#004360]/5 border-[#004360]/10 hover:bg-[#004360]/10'}`}>
               {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
            </button>
         </td>
