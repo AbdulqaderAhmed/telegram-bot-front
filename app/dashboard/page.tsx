@@ -73,7 +73,7 @@ export default function DashboardOverview() {
   } = useDashboardStore();
 
   useEffect(() => {
-    const stop = startPolling(30_000); // real-time polling every 30s
+    const stop = startPolling(10_000); // Poll every 10s for more "instant" feel
     return stop;
   }, [startPolling]);
 
