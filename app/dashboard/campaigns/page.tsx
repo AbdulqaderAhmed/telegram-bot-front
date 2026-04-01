@@ -12,6 +12,7 @@ import {
   Calendar,
   Save,
   AlertCircle,
+  Pencil,
 } from 'lucide-react';
 import api from '@/lib/axios';
 
@@ -38,6 +39,12 @@ export default function CampaignsPage() {
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState('');
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editStartDate, setEditStartDate] = useState('');
+  const [editEndDate, setEditEndDate] = useState('');
 
   const currentCampaign = useMemo(
     () => campaigns.find((c) => c.isCurrent) || null,
@@ -110,6 +117,45 @@ export default function CampaignsPage() {
     try {
       await api.patch(`/campaigns/${id}/enabled`, { isEnabled });
       setSuccess(isEnabled ? 'Campaign enabled' : 'Campaign disabled');
+      await fetchCampaigns();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to update campaign');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const startEdit = (c: Campaign) => {
+    setEditingId(c.id);
+    setEditName(c.name || '');
+    setEditDescription(c.description || '');
+    setEditStartDate(new Date(c.startDate).toISOString().slice(0, 10));
+    setEditEndDate(c.endDate ? new Date(c.endDate).toISOString().slice(0, 10) : '');
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName('');
+    setEditDescription('');
+    setEditStartDate('');
+    setEditEndDate('');
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    setSaving(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      await api.patch(`/campaigns/${editingId}`, {
+        name: editName.trim(),
+        description: editDescription.trim() || null,
+        startDate: editStartDate ? new Date(editStartDate).toISOString() : undefined,
+        endDate: editEndDate ? new Date(editEndDate).toISOString() : null,
+      });
+      setSuccess('Campaign updated');
+      cancelEdit();
       await fetchCampaigns();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
@@ -303,7 +349,7 @@ export default function CampaignsPage() {
                 key={c.id}
                 className="p-6 rounded-[2rem] border border-slate-100 bg-white/60 flex flex-col md:flex-row md:items-center justify-between gap-6"
               >
-                <div className="space-y-1">
+                <div className="space-y-1 flex-1">
                   <div className="flex items-center gap-3">
                     <p className="text-[16px] font-bold text-[#004360]">
                       {c.name}
@@ -335,9 +381,82 @@ export default function CampaignsPage() {
                       {c.description}
                     </p>
                   ) : null}
+
+                  {editingId === c.id ? (
+                    <div className="mt-4 space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
+                            Name
+                          </label>
+                          <input
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
+                            Start Date
+                          </label>
+                          <input
+                            type="date"
+                            value={editStartDate}
+                            onChange={(e) => setEditStartDate(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
+                            End Date
+                          </label>
+                          <input
+                            type="date"
+                            value={editEndDate}
+                            onChange={(e) => setEditEndDate(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
+                            Description
+                          </label>
+                          <textarea
+                            value={editDescription}
+                            onChange={(e) => setEditDescription(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          onClick={saveEdit}
+                          disabled={saving}
+                          className="px-6 py-3 rounded-2xl bg-[#FF6B0B] text-white font-bold text-[12px] hover:-translate-y-1 transition-all disabled:opacity-50 active:scale-95"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          disabled={saving}
+                          className="px-6 py-3 rounded-2xl bg-slate-200 text-slate-700 font-bold text-[12px] hover:-translate-y-1 transition-all disabled:opacity-50 active:scale-95"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => startEdit(c)}
+                    disabled={saving || loading}
+                    className="px-6 py-3 rounded-2xl bg-slate-900 text-white font-bold text-[12px] hover:-translate-y-1 transition-all disabled:opacity-50 active:scale-95 flex items-center gap-2"
+                  >
+                    <Pencil className="w-4 h-4" />
+                    Edit
+                  </button>
                   <button
                     onClick={() => setCurrent(c.id)}
                     disabled={saving || !c.isEnabled}

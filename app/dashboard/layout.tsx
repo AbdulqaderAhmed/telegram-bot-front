@@ -11,8 +11,6 @@ import {
   LogOut, 
   Menu, 
   X,
-  Bell,
-  Search,
   ChevronRight,
   ShieldCheck,
   Trophy,
@@ -21,7 +19,6 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import Link from 'next/link';
-import { useRef } from 'react';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
@@ -38,19 +35,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, logout, isLoading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Keyboard shortcut Ctrl+K to search
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   // Helper to get breadcrumbs
   const getBreadcrumbs = () => {
@@ -175,33 +159,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-3 glass px-4 py-2 rounded-xl focus-within:ring-2 focus-within:ring-blue-500/30 transition-all">
-              <Search className="w-4 h-4 text-foreground/60" />
-              <input 
-                ref={searchInputRef}
-                type="text" 
-                placeholder="Search... (Ctrl+K)" 
-                className="bg-transparent border-none outline-none text-[14px] font-normal text-foreground placeholder:text-foreground/50 w-40"
-              />
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button className="w-10 h-10 rounded-xl hover:bg-foreground/5 flex items-center justify-center text-foreground/70 hover:text-foreground relative transition-all">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-background" />
-              </button>
-              
-              <div className="h-8 w-[1px] bg-foreground/5 mx-2" />
-              
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-[14px] font-bold text-foreground leading-none">{user.fullname}</p>
-                  <p className="text-[12px] text-foreground/60 mt-1 uppercase tracking-wider font-normal">{user.role}</p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-600/20">
-                  {user.fullname.charAt(0)}
-                </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-[14px] font-bold text-foreground leading-none">{user.fullname}</p>
+                <p className="text-[12px] text-foreground/60 mt-1 uppercase tracking-wider font-normal">{user.role}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-600/20">
+                {user.fullname.charAt(0)}
               </div>
             </div>
           </div>
