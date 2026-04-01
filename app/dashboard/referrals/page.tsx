@@ -67,7 +67,7 @@ export default function ReferralsPage() {
     }
   };
 
-  const fetchLogs = async () => {
+  const fetchLogs = async (id?: number | null) => {
     setLoading(true);
     try {
       const { data } = await api.get('/referrals', {
@@ -76,7 +76,7 @@ export default function ReferralsPage() {
           limit: 10,
           search: search || undefined,
           status: status || undefined,
-          campaignId: campaignId || undefined
+          campaignId: id ?? campaignId ?? undefined
         }
       });
       setLogs(data.data);
@@ -119,12 +119,12 @@ export default function ReferralsPage() {
   };
 
   useEffect(() => {
-    fetchCampaigns();
+    fetchCampaigns().finally(() => fetchLogs(null));
   }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (campaignId) fetchLogs();
+      fetchLogs(campaignId);
     }, 500); // Debounce search
     return () => clearTimeout(timer);
   }, [page, search, status, campaignId]);

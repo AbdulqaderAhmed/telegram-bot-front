@@ -66,11 +66,11 @@ export default function ReportsPage() {
     }
   };
 
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = async (id?: number | null) => {
     setLoading(true);
     try {
       const { data } = await api.get('/leaderboard', {
-        params: { limit: 100, campaignId: campaignId || undefined } // Get a larger set for reporting
+        params: { limit: 100, campaignId: id ?? campaignId ?? undefined } // Get a larger set for reporting
       });
       setLeaderboard(data);
     } catch (err) {
@@ -81,11 +81,11 @@ export default function ReportsPage() {
   };
 
   useEffect(() => {
-    fetchCampaigns();
+    fetchCampaigns().finally(() => fetchLeaderboard(null));
   }, []);
 
   useEffect(() => {
-    if (campaignId) fetchLeaderboard();
+    fetchLeaderboard(campaignId);
   }, [campaignId]);
 
   const toggleRow = (userId: number) => {
@@ -165,7 +165,7 @@ export default function ReportsPage() {
         <div className="flex flex-col gap-4">
            <div className="flex gap-4">
               <button 
-                onClick={fetchLeaderboard}
+                onClick={() => fetchLeaderboard(campaignId)}
                 className="p-5 glass rounded-2xl text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-all shadow-sm active:scale-95"
               >
                 <RefreshCw className={`w-6 h-6 ${loading ? 'animate-spin' : ''}`} />
