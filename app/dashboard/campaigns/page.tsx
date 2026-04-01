@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Target,
   Plus,
@@ -13,8 +13,8 @@ import {
   Save,
   AlertCircle,
   Pencil,
-} from 'lucide-react';
-import api from '@/lib/axios';
+} from "lucide-react";
+import api from "@/lib/axios";
 
 type Campaign = {
   id: number;
@@ -37,20 +37,22 @@ export default function CampaignsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [descriptionEn, setDescriptionEn] = useState('');
-  const [descriptionAm, setDescriptionAm] = useState('');
-  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [endDate, setEndDate] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [descriptionEn, setDescriptionEn] = useState("");
+  const [descriptionAm, setDescriptionAm] = useState("");
+  const [startDate, setStartDate] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
+  const [endDate, setEndDate] = useState("");
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editName, setEditName] = useState('');
-  const [editDescription, setEditDescription] = useState('');
-  const [editDescriptionEn, setEditDescriptionEn] = useState('');
-  const [editDescriptionAm, setEditDescriptionAm] = useState('');
-  const [editStartDate, setEditStartDate] = useState('');
-  const [editEndDate, setEditEndDate] = useState('');
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editDescriptionEn, setEditDescriptionEn] = useState("");
+  const [editDescriptionAm, setEditDescriptionAm] = useState("");
+  const [editStartDate, setEditStartDate] = useState("");
+  const [editEndDate, setEditEndDate] = useState("");
 
   const currentCampaign = useMemo(
     () => campaigns.find((c) => c.isCurrent) || null,
@@ -61,10 +63,10 @@ export default function CampaignsPage() {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.get<Campaign[]>('/campaigns');
+      const { data } = await api.get<Campaign[]>("/campaigns");
       setCampaigns(data);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to fetch campaigns');
+      setError(err?.response?.data?.message || "Failed to fetch campaigns");
     } finally {
       setLoading(false);
     }
@@ -80,7 +82,7 @@ export default function CampaignsPage() {
     setError(null);
     setSuccess(null);
     try {
-      await api.post('/campaigns', {
+      await api.post("/campaigns", {
         name: name.trim(),
         description: description.trim() || null,
         descriptionEn: descriptionEn.trim() || null,
@@ -88,17 +90,17 @@ export default function CampaignsPage() {
         startDate: new Date(startDate).toISOString(),
         endDate: endDate ? new Date(endDate).toISOString() : null,
       });
-      setName('');
-      setDescription('');
-      setDescriptionEn('');
-      setDescriptionAm('');
+      setName("");
+      setDescription("");
+      setDescriptionEn("");
+      setDescriptionAm("");
       setStartDate(new Date().toISOString().slice(0, 10));
-      setEndDate('');
-      setSuccess('Campaign created');
+      setEndDate("");
+      setSuccess("Campaign created");
       await fetchCampaigns();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to create campaign');
+      setError(err?.response?.data?.message || "Failed to create campaign");
     } finally {
       setSaving(false);
     }
@@ -110,11 +112,13 @@ export default function CampaignsPage() {
     setSuccess(null);
     try {
       await api.patch(`/campaigns/${id}/current`);
-      setSuccess('Current campaign updated');
+      setSuccess("Current campaign updated");
       await fetchCampaigns();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to set current campaign');
+      setError(
+        err?.response?.data?.message || "Failed to set current campaign",
+      );
     } finally {
       setSaving(false);
     }
@@ -126,11 +130,11 @@ export default function CampaignsPage() {
     setSuccess(null);
     try {
       await api.patch(`/campaigns/${id}/enabled`, { isEnabled });
-      setSuccess(isEnabled ? 'Campaign enabled' : 'Campaign disabled');
+      setSuccess(isEnabled ? "Campaign enabled" : "Campaign disabled");
       await fetchCampaigns();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to update campaign');
+      setError(err?.response?.data?.message || "Failed to update campaign");
     } finally {
       setSaving(false);
     }
@@ -138,22 +142,24 @@ export default function CampaignsPage() {
 
   const startEdit = (c: Campaign) => {
     setEditingId(c.id);
-    setEditName(c.name || '');
-    setEditDescription(c.description || '');
-    setEditDescriptionEn(c.descriptionEn || '');
-    setEditDescriptionAm(c.descriptionAm || '');
+    setEditName(c.name || "");
+    setEditDescription(c.description || "");
+    setEditDescriptionEn(c.descriptionEn || "");
+    setEditDescriptionAm(c.descriptionAm || "");
     setEditStartDate(new Date(c.startDate).toISOString().slice(0, 10));
-    setEditEndDate(c.endDate ? new Date(c.endDate).toISOString().slice(0, 10) : '');
+    setEditEndDate(
+      c.endDate ? new Date(c.endDate).toISOString().slice(0, 10) : "",
+    );
   };
 
   const cancelEdit = () => {
     setEditingId(null);
-    setEditName('');
-    setEditDescription('');
-    setEditDescriptionEn('');
-    setEditDescriptionAm('');
-    setEditStartDate('');
-    setEditEndDate('');
+    setEditName("");
+    setEditDescription("");
+    setEditDescriptionEn("");
+    setEditDescriptionAm("");
+    setEditStartDate("");
+    setEditEndDate("");
   };
 
   const saveEdit = async () => {
@@ -167,15 +173,17 @@ export default function CampaignsPage() {
         description: editDescription.trim() || null,
         descriptionEn: editDescriptionEn.trim() || null,
         descriptionAm: editDescriptionAm.trim() || null,
-        startDate: editStartDate ? new Date(editStartDate).toISOString() : undefined,
+        startDate: editStartDate
+          ? new Date(editStartDate).toISOString()
+          : undefined,
         endDate: editEndDate ? new Date(editEndDate).toISOString() : null,
       });
-      setSuccess('Campaign updated');
+      setSuccess("Campaign updated");
       cancelEdit();
       await fetchCampaigns();
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to update campaign');
+      setError(err?.response?.data?.message || "Failed to update campaign");
     } finally {
       setSaving(false);
     }
@@ -198,8 +206,8 @@ export default function CampaignsPage() {
             Campaigns
           </h1>
           <p className="text-slate-500 font-normal text-[14px] max-w-2xl">
-            Create and manage campaigns. The bot generates referral links only for
-            the current enabled campaign.
+            Create and manage campaigns. The bot generates referral links only
+            for the current enabled campaign.
           </p>
         </div>
 
@@ -209,7 +217,7 @@ export default function CampaignsPage() {
             disabled={loading || saving}
             className="p-5 glass rounded-2xl text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-all shadow-sm active:scale-95 disabled:opacity-50"
           >
-            <RefreshCw className={`w-6 h-6 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-6 h-6 ${loading ? "animate-spin" : ""}`} />
           </button>
         </div>
       </header>
@@ -231,7 +239,7 @@ export default function CampaignsPage() {
           </div>
           <div className="flex items-center gap-2 text-[12px] font-bold text-slate-500">
             <Crown className="w-4 h-4 text-amber-500" />
-            {currentCampaign ? currentCampaign.name : 'None'}
+            {currentCampaign ? currentCampaign.name : "None"}
           </div>
         </div>
 
@@ -240,7 +248,7 @@ export default function CampaignsPage() {
             {error && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="p-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-[14px] font-bold flex items-center gap-3"
               >
@@ -251,7 +259,7 @@ export default function CampaignsPage() {
             {success && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-2xl text-[14px] font-bold flex items-center gap-3"
               >
@@ -412,7 +420,9 @@ export default function CampaignsPage() {
                   </div>
                   <p className="text-[12px] text-slate-500">
                     Start: {new Date(c.startDate).toLocaleDateString()}
-                    {c.endDate ? ` | End: ${new Date(c.endDate).toLocaleDateString()}` : ''}
+                    {c.endDate
+                      ? ` | End: ${new Date(c.endDate).toLocaleDateString()}`
+                      : ""}
                   </p>
                   {c.description ? (
                     <p className="text-[12px] text-slate-500 whitespace-pre-wrap">
@@ -449,7 +459,9 @@ export default function CampaignsPage() {
                           </label>
                           <textarea
                             value={editDescriptionEn}
-                            onChange={(e) => setEditDescriptionEn(e.target.value)}
+                            onChange={(e) =>
+                              setEditDescriptionEn(e.target.value)
+                            }
                             className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
                           />
                         </div>
@@ -459,7 +471,9 @@ export default function CampaignsPage() {
                           </label>
                           <textarea
                             value={editDescriptionAm}
-                            onChange={(e) => setEditDescriptionAm(e.target.value)}
+                            onChange={(e) =>
+                              setEditDescriptionAm(e.target.value)
+                            }
                             className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
                           />
                         </div>
@@ -527,11 +541,11 @@ export default function CampaignsPage() {
                     disabled={saving}
                     className={`px-6 py-3 rounded-2xl font-bold text-[12px] hover:-translate-y-1 transition-all disabled:opacity-50 active:scale-95 ${
                       c.isEnabled
-                        ? 'bg-rose-500 text-white'
-                        : 'bg-emerald-500 text-white'
+                        ? "bg-rose-500 text-white"
+                        : "bg-emerald-500 text-white"
                     }`}
                   >
-                    {c.isEnabled ? 'Disable' : 'Enable'}
+                    {c.isEnabled ? "Disable" : "Enable"}
                   </button>
                 </div>
               </div>
