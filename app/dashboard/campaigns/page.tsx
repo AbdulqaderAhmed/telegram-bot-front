@@ -18,7 +18,7 @@ import api from '@/lib/axios';
 type Campaign = {
   id: number;
   name: string;
-  rewardPerReferral: number;
+  description: string | null;
   startDate: string;
   endDate: string | null;
   isEnabled: boolean;
@@ -35,7 +35,7 @@ export default function CampaignsPage() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [name, setName] = useState('');
-  const [rewardPerReferral, setRewardPerReferral] = useState('0');
+  const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState('');
 
@@ -69,12 +69,12 @@ export default function CampaignsPage() {
     try {
       await api.post('/campaigns', {
         name: name.trim(),
-        rewardPerReferral: Number(rewardPerReferral || 0),
+        description: description.trim() || null,
         startDate: new Date(startDate).toISOString(),
         endDate: endDate ? new Date(endDate).toISOString() : null,
       });
       setName('');
-      setRewardPerReferral('0');
+      setDescription('');
       setStartDate(new Date().toISOString().slice(0, 10));
       setEndDate('');
       setSuccess('Campaign created');
@@ -214,13 +214,13 @@ export default function CampaignsPage() {
             </div>
             <div className="space-y-2">
               <label className="text-[12px] font-bold text-[#004360] uppercase tracking-widest">
-                Reward Per Referral
+                Description
               </label>
-              <input
-                value={rewardPerReferral}
-                onChange={(e) => setRewardPerReferral(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-mono font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
-                placeholder="0"
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize-none"
+                placeholder="Describe this campaign (shown to users in the bot)"
               />
             </div>
             <div className="space-y-2">
@@ -327,10 +327,14 @@ export default function CampaignsPage() {
                     )}
                   </div>
                   <p className="text-[12px] text-slate-500">
-                    Reward: {Number(c.rewardPerReferral || 0).toFixed(2)} | Start:{' '}
-                    {new Date(c.startDate).toLocaleDateString()}
+                    Start: {new Date(c.startDate).toLocaleDateString()}
                     {c.endDate ? ` | End: ${new Date(c.endDate).toLocaleDateString()}` : ''}
                   </p>
+                  {c.description ? (
+                    <p className="text-[12px] text-slate-500 whitespace-pre-wrap">
+                      {c.description}
+                    </p>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -361,4 +365,3 @@ export default function CampaignsPage() {
     </div>
   );
 }
-
