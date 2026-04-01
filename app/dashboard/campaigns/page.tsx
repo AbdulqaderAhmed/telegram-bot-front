@@ -144,7 +144,7 @@ export default function CampaignsPage() {
     setEditingId(c.id);
     setEditName(c.name || "");
     setEditDescription(c.description || "");
-    setEditDescriptionEn(c.descriptionEn || "");
+    setEditDescriptionEn(c.descriptionEn || c.description || "");
     setEditDescriptionAm(c.descriptionAm || "");
     setEditStartDate(new Date(c.startDate).toISOString().slice(0, 10));
     setEditEndDate(
@@ -279,7 +279,7 @@ export default function CampaignsPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
-                placeholder="e.g., April Launch"
+                placeholder="e.g., የትንሳኤ በዓል"
               />
             </div>
             <div className="space-y-2">
@@ -290,7 +290,7 @@ export default function CampaignsPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize-none"
-                placeholder="Fallback description if localized versions are not available"
+                placeholder='Used only if English/Amharic description is empty. Supports {username}. Use lines starting with o, -, *, •, or 1. for bullet points.'
               />
             </div>
             <div className="space-y-2">
@@ -301,7 +301,7 @@ export default function CampaignsPage() {
                 value={descriptionEn}
                 onChange={(e) => setDescriptionEn(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize-none"
-                placeholder="Description shown to English-speaking users"
+                placeholder='Shown to English-speaking users. Supports {username}. Use lines starting with o, -, *, •, or 1. for bullet points.'
               />
             </div>
             <div className="space-y-2">
@@ -312,7 +312,7 @@ export default function CampaignsPage() {
                 value={descriptionAm}
                 onChange={(e) => setDescriptionAm(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize-none"
-                placeholder="በአማርኛ ተናጋሪ ተጠቃሚዎች ለሚታየው መግለጫ"
+                placeholder="{username} ይጠቀሙ። ለዝርዝር ነጥቦች መስመሮችን በ o ወይም - ወይም 1. ጀምሩ።"
               />
             </div>
             <div className="space-y-2">
@@ -424,7 +424,17 @@ export default function CampaignsPage() {
                       ? ` | End: ${new Date(c.endDate).toLocaleDateString()}`
                       : ""}
                   </p>
-                  {c.description ? (
+                  {c.descriptionAm ? (
+                    <p className="text-[12px] text-slate-500 whitespace-pre-wrap">
+                      {c.descriptionAm}
+                    </p>
+                  ) : null}
+                  {c.descriptionEn ? (
+                    <p className="text-[12px] text-slate-500 whitespace-pre-wrap">
+                      {c.descriptionEn}
+                    </p>
+                  ) : null}
+                  {c.description && !c.descriptionEn && !c.descriptionAm ? (
                     <p className="text-[12px] text-slate-500 whitespace-pre-wrap">
                       {c.description}
                     </p>
@@ -451,6 +461,7 @@ export default function CampaignsPage() {
                             value={editDescription}
                             onChange={(e) => setEditDescription(e.target.value)}
                             className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
+                            placeholder='Supports {username}. Use lines starting with o, -, *, •, or 1.'
                           />
                         </div>
                         <div className="space-y-2">
@@ -463,6 +474,7 @@ export default function CampaignsPage() {
                               setEditDescriptionEn(e.target.value)
                             }
                             className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
+                            placeholder='Supports {username}. Use lines starting with o, -, *, •, or 1.'
                           />
                         </div>
                         <div className="space-y-2">
@@ -475,6 +487,7 @@ export default function CampaignsPage() {
                               setEditDescriptionAm(e.target.value)
                             }
                             className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
+                            placeholder="{username} ይጠቀሙ። ለዝርዝር ነጥቦች መስመሮችን በ o ወይም - ወይም 1. ጀምሩ።"
                           />
                         </div>
                         <div className="space-y-2">
