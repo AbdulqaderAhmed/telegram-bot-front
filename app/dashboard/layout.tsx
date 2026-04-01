@@ -15,7 +15,8 @@ import {
   Search,
   ChevronRight,
   ShieldCheck,
-  Trophy
+  Trophy,
+  Target
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
@@ -26,6 +27,7 @@ const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', href: '/dashboard' },
   { icon: UserPlus, label: 'Referral Logs', href: '/dashboard/referrals' },
   { icon: Trophy, label: 'Reports & Leaderboard', href: '/dashboard/reports' },
+  { icon: Target, label: 'Campaigns', href: '/dashboard/campaigns' },
   { icon: ShieldCheck, label: 'Security Audit', href: '/dashboard/fraud' },
   { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
   { icon: Settings, label: 'Configuration', href: '/dashboard/settings' },

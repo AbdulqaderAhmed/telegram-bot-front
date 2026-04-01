@@ -40,17 +40,37 @@ interface LeaderboardEntry {
   };
 }
 
+interface Campaign {
+  id: number;
+  name: string;
+  isCurrent: boolean;
+  isEnabled: boolean;
+}
+
 export default function ReportsPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaignId, setCampaignId] = useState<number | null>(null);
+
+  const fetchCampaigns = async () => {
+    try {
+      const { data } = await api.get<Campaign[]>('/campaigns');
+      setCampaigns(data);
+      const current = data.find((c) => c.isCurrent) || data.find((c) => c.isEnabled) || null;
+      setCampaignId((prev) => prev ?? current?.id ?? null);
+    } catch (err) {
+      setCampaigns([]);
+    }
+  };
 
   const fetchLeaderboard = async () => {
     setLoading(true);
     try {
       const { data } = await api.get('/leaderboard', {
-        params: { limit: 100 } // Get a larger set for reporting
+        params: { limit: 100, campaignId: campaignId || undefined } // Get a larger set for reporting
       });
       setLeaderboard(data);
     } catch (err) {
@@ -61,8 +81,12 @@ export default function ReportsPage() {
   };
 
   useEffect(() => {
-    fetchLeaderboard();
+    fetchCampaigns();
   }, []);
+
+  useEffect(() => {
+    if (campaignId) fetchLeaderboard();
+  }, [campaignId]);
 
   const toggleRow = (userId: number) => {
     setExpandedRow(prev => prev === userId ? null : userId);
@@ -154,6 +178,21 @@ export default function ReportsPage() {
                 {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4 text-emerald-400" />}
                 Export to Excel
               </button>
+           </div>
+           <div className="px-6 py-3 glass rounded-xl border border-slate-100 flex items-center justify-between gap-4">
+              <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">Campaign</span>
+              <select
+                value={campaignId ?? ''}
+                onChange={(e) => setCampaignId(e.target.value ? Number(e.target.value) : null)}
+                className="bg-transparent text-[12px] font-bold text-[#004360] outline-none"
+              >
+                <option value="">Select</option>
+                {campaigns.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.isCurrent ? `${c.name} (Current)` : c.name}
+                  </option>
+                ))}
+              </select>
            </div>
            <div className="px-6 py-3 glass rounded-xl border border-slate-100 flex items-center justify-between">
               <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">Last Updated</span>

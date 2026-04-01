@@ -38,6 +38,13 @@ interface ReferralLog {
   };
 }
 
+interface Campaign {
+  id: number;
+  name: string;
+  isCurrent: boolean;
+  isEnabled: boolean;
+}
+
 export default function ReferralsPage() {
   const [logs, setLogs] = useState<ReferralLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +52,20 @@ export default function ReferralsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<string>('');
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaignId, setCampaignId] = useState<number | null>(null);
+
+  const fetchCampaigns = async () => {
+    try {
+      const { data } = await api.get<Campaign[]>('/campaigns');
+      setCampaigns(data);
+      const current = data.find((c) => c.isCurrent) || data.find((c) => c.isEnabled) || null;
+      setCampaignId((prev) => prev ?? current?.id ?? null);
+    } catch {
+      setCampaigns([]);
+      setCampaignId(null);
+    }
+  };
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -54,7 +75,8 @@ export default function ReferralsPage() {
           page, 
           limit: 10,
           search: search || undefined,
-          status: status || undefined
+          status: status || undefined,
+          campaignId: campaignId || undefined
         }
       });
       setLogs(data.data);
@@ -97,11 +119,15 @@ export default function ReferralsPage() {
   };
 
   useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
-      fetchLogs();
+      if (campaignId) fetchLogs();
     }, 500); // Debounce search
     return () => clearTimeout(timer);
-  }, [page, search, status]);
+  }, [page, search, status, campaignId]);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -176,6 +202,22 @@ export default function ReferralsPage() {
         </div>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
+           <div className="flex items-center gap-2 px-5 py-4 bg-slate-50 rounded-2xl border-none">
+              <Calendar className="w-4 h-4 text-slate-400" />
+              <select
+                value={campaignId ?? ''}
+                onChange={(e) => { setPage(1); setCampaignId(e.target.value ? Number(e.target.value) : null); }}
+                className="bg-transparent border-none text-[14px] font-normal p-0 focus:ring-0 text-slate-600 cursor-pointer min-w-[160px]"
+              >
+                <option value="">Select Campaign</option>
+                {campaigns.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.isCurrent ? `${c.name} (Current)` : c.name}
+                  </option>
+                ))}
+              </select>
+           </div>
+
            <div className="flex items-center gap-2 px-5 py-4 bg-slate-50 rounded-2xl border-none">
               <Filter className="w-4 h-4 text-slate-400" />
               <select 
