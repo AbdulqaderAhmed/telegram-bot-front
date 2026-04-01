@@ -314,7 +314,8 @@ export default function CampaignsPage() {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize"
+                style={{ maxWidth: "100%" }}
+                className="w-full max-w-full box-border bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize"
                 placeholder='Used only if English/Amharic description is empty. Supports {username} and {title}. Use lines starting with o, -, *, •, or 1. for bullet points.'
               />
             </div>
@@ -325,7 +326,8 @@ export default function CampaignsPage() {
               <textarea
                 value={descriptionEn}
                 onChange={(e) => setDescriptionEn(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize"
+                style={{ maxWidth: "100%" }}
+                className="w-full max-w-full box-border bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize"
                 placeholder='Shown to English-speaking users. Supports {username} and {title}. Use lines starting with o, -, *, •, or 1. for bullet points.'
               />
             </div>
@@ -336,7 +338,8 @@ export default function CampaignsPage() {
               <textarea
                 value={descriptionAm}
                 onChange={(e) => setDescriptionAm(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize"
+                style={{ maxWidth: "100%" }}
+                className="w-full max-w-full box-border bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize"
                 placeholder="{username} እና {title} ይጠቀሙ። ለዝርዝር ነጥቦች መስመሮችን በ o ወይም - ወይም 1. ጀምሩ።"
               />
             </div>
@@ -495,7 +498,8 @@ export default function CampaignsPage() {
                           <textarea
                             value={editDescription}
                             onChange={(e) => setEditDescription(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize"
+                            style={{ maxWidth: "100%" }}
+                            className="w-full max-w-full box-border bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize"
                             placeholder='Supports {username} and {title}. Use lines starting with o, -, *, •, or 1.'
                           />
                         </div>
@@ -508,7 +512,8 @@ export default function CampaignsPage() {
                             onChange={(e) =>
                               setEditDescriptionEn(e.target.value)
                             }
-                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize"
+                            style={{ maxWidth: "100%" }}
+                            className="w-full max-w-full box-border bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize"
                             placeholder='Supports {username} and {title}. Use lines starting with o, -, *, •, or 1.'
                           />
                         </div>
@@ -521,7 +526,8 @@ export default function CampaignsPage() {
                             onChange={(e) =>
                               setEditDescriptionAm(e.target.value)
                             }
-                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize"
+                            style={{ maxWidth: "100%" }}
+                            className="w-full max-w-full box-border bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize"
                             placeholder="{username} እና {title} ይጠቀሙ። ለዝርዝር ነጥቦች መስመሮችን በ o ወይም - ወይም 1. ጀምሩ።"
                           />
                         </div>
