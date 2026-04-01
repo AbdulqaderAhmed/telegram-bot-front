@@ -20,6 +20,8 @@ type Campaign = {
   id: number;
   name: string;
   description: string | null;
+  descriptionEn: string | null;
+  descriptionAm: string | null;
   startDate: string;
   endDate: string | null;
   isEnabled: boolean;
@@ -37,12 +39,16 @@ export default function CampaignsPage() {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [descriptionEn, setDescriptionEn] = useState('');
+  const [descriptionAm, setDescriptionAm] = useState('');
   const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState('');
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editDescriptionEn, setEditDescriptionEn] = useState('');
+  const [editDescriptionAm, setEditDescriptionAm] = useState('');
   const [editStartDate, setEditStartDate] = useState('');
   const [editEndDate, setEditEndDate] = useState('');
 
@@ -77,11 +83,15 @@ export default function CampaignsPage() {
       await api.post('/campaigns', {
         name: name.trim(),
         description: description.trim() || null,
+        descriptionEn: descriptionEn.trim() || null,
+        descriptionAm: descriptionAm.trim() || null,
         startDate: new Date(startDate).toISOString(),
         endDate: endDate ? new Date(endDate).toISOString() : null,
       });
       setName('');
       setDescription('');
+      setDescriptionEn('');
+      setDescriptionAm('');
       setStartDate(new Date().toISOString().slice(0, 10));
       setEndDate('');
       setSuccess('Campaign created');
@@ -130,6 +140,8 @@ export default function CampaignsPage() {
     setEditingId(c.id);
     setEditName(c.name || '');
     setEditDescription(c.description || '');
+    setEditDescriptionEn(c.descriptionEn || '');
+    setEditDescriptionAm(c.descriptionAm || '');
     setEditStartDate(new Date(c.startDate).toISOString().slice(0, 10));
     setEditEndDate(c.endDate ? new Date(c.endDate).toISOString().slice(0, 10) : '');
   };
@@ -138,6 +150,8 @@ export default function CampaignsPage() {
     setEditingId(null);
     setEditName('');
     setEditDescription('');
+    setEditDescriptionEn('');
+    setEditDescriptionAm('');
     setEditStartDate('');
     setEditEndDate('');
   };
@@ -151,6 +165,8 @@ export default function CampaignsPage() {
       await api.patch(`/campaigns/${editingId}`, {
         name: editName.trim(),
         description: editDescription.trim() || null,
+        descriptionEn: editDescriptionEn.trim() || null,
+        descriptionAm: editDescriptionAm.trim() || null,
         startDate: editStartDate ? new Date(editStartDate).toISOString() : undefined,
         endDate: editEndDate ? new Date(editEndDate).toISOString() : null,
       });
@@ -260,13 +276,35 @@ export default function CampaignsPage() {
             </div>
             <div className="space-y-2">
               <label className="text-[12px] font-bold text-[#004360] uppercase tracking-widest">
-                Description
+                Description (Fallback)
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize-none"
-                placeholder="Describe this campaign (shown to users in the bot)"
+                placeholder="Fallback description if localized versions are not available"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[12px] font-bold text-[#004360] uppercase tracking-widest">
+                Description (English)
+              </label>
+              <textarea
+                value={descriptionEn}
+                onChange={(e) => setDescriptionEn(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize-none"
+                placeholder="Description shown to English-speaking users"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[12px] font-bold text-[#004360] uppercase tracking-widest">
+                Description (Amharic)
+              </label>
+              <textarea
+                value={descriptionAm}
+                onChange={(e) => setDescriptionAm(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-4 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[96px] resize-none"
+                placeholder="በአማርኛ ተናጋሪ ተጠቃሚዎች ለሚታየው መግለጫ"
               />
             </div>
             <div className="space-y-2">
@@ -397,6 +435,36 @@ export default function CampaignsPage() {
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
+                            Description (Fallback)
+                          </label>
+                          <textarea
+                            value={editDescription}
+                            onChange={(e) => setEditDescription(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
+                            Description (English)
+                          </label>
+                          <textarea
+                            value={editDescriptionEn}
+                            onChange={(e) => setEditDescriptionEn(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
+                            Description (Amharic)
+                          </label>
+                          <textarea
+                            value={editDescriptionAm}
+                            onChange={(e) => setEditDescriptionAm(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
                             Start Date
                           </label>
                           <input
@@ -415,16 +483,6 @@ export default function CampaignsPage() {
                             value={editEndDate}
                             onChange={(e) => setEditEndDate(e.target.value)}
                             className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">
-                            Description
-                          </label>
-                          <textarea
-                            value={editDescription}
-                            onChange={(e) => setEditDescription(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl auto-transition py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[84px] resize-none"
                           />
                         </div>
                       </div>
