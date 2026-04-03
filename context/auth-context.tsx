@@ -30,16 +30,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const storedUser = Cookies.get('user');
     const token = Cookies.get('token');
-    
-    if (storedUser && token) {
+    const expiresAt = Cookies.get('token_expires_at');
+
+    const isExpired = expiresAt ? new Date() > new Date(expiresAt) : false;
+
+    if (storedUser && token && !isExpired) {
       setUser(JSON.parse(storedUser));
+    } else if (isExpired) {
+      Cookies.remove('token');
+      Cookies.remove('user');
+      Cookies.remove('token_expires_at');
     }
     setIsLoading(false);
+
+    // Check expiry every minute while the tab is open
+    const interval = setInterval(() => {
+      const exp = Cookies.get('token_expires_at');
+      if (exp && new Date() > new Date(exp)) {
+        Cookies.remove('token');
+        Cookies.remove('user');
+        Cookies.remove('token_expires_at');
+        setUser(null);
+        router.push('/login');
+      }
+    }, 60_000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const login = (data: any) => {
-    Cookies.set('token', data.access_token, { expires: 7 });
-    Cookies.set('user', JSON.stringify(data.user), { expires: 7 });
+    const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000); // 8 hours from now
+    Cookies.set('token', data.access_token, { expires: expiresAt });
+    Cookies.set('user', JSON.stringify(data.user), { expires: expiresAt });
+    Cookies.set('token_expires_at', expiresAt.toISOString(), { expires: expiresAt });
     setUser(data.user);
     router.push('/dashboard');
   };
@@ -47,6 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     Cookies.remove('token');
     Cookies.remove('user');
+    Cookies.remove('token_expires_at');
     setUser(null);
     router.push('/login');
   };
