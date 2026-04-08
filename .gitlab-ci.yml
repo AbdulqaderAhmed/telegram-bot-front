@@ -67,5 +67,5 @@ deploy_frontend_windows:
     - echo "Restarting frontend app..."
 
     - npx pm2 restart telegram-bot-front 2>$null; if ($LASTEXITCODE -ne 0) {
-        npx pm2 start npm --name telegram-bot-front -- start
+        pm2 start npm.cmd --name telegram-bot-front -- start
       }
