@@ -21,7 +21,6 @@ import {
 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
-import * as XLSX from 'xlsx';
 
 interface LeaderboardEntry {
   rank: number;
@@ -104,10 +103,11 @@ export default function ReportsPage() {
     setExpandedRow((prev) => (prev === userId ? null : userId));
   };
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     if (leaderboard.length === 0) return;
     setExporting(true);
     try {
+      const XLSX = await import('xlsx');
       const exportData = leaderboard.map((entry) => {
         const fullName = [entry.user?.firstName, entry.user?.lastName].filter(Boolean).join(' ');
         return {
