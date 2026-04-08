@@ -42,3 +42,30 @@ deploy_frontend:
           --network tg-dns \
           telegram-bot-front
       EOF
+
+deploy_frontend:
+  stage: deploy
+  only:
+    - master
+  tags:
+    - TG-ABDU-4
+
+  script:
+    - echo "Deploying Next.js frontend on Windows server..."
+
+    - cd C:\Users\Admin\Documents\TG-referral-bot\telegram-bot-front
+
+    - echo "Pulling latest code..."
+    - git pull origin master
+
+    - echo "Installing dependencies..."
+    - npm install
+
+    - echo "Building Next.js app..."
+    - npm run build
+
+    - echo "Restarting frontend app..."
+
+    - npx pm2 restart telegram-bot-front 2>$null; if ($LASTEXITCODE -ne 0) {
+        npx pm2 start npm --name telegram-bot-front -- start
+      }
