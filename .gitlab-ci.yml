@@ -51,13 +51,25 @@ deploy_frontend_windows:
     - TG-ABDU-4
 
   script:
-      - echo "Deploying Next.js frontend on Windows server..."
-      - cd C:\Users\Admin\Documents\TG-referral-bot\telegram-bot-front
-      - git pull origin master
-      - npm install
-      - npm run build
-      - echo "Restarting frontend app..."
-      # The fix: use -- to separate pm2 arguments from the npm arguments
-      - pm2 restart telegram-bot-front 2>$null; if ($LASTEXITCODE -ne 0) {
-          pm2 start "npm" --name "telegram-bot-front" -- run start
-        }
+    - echo "Deploying Next.js frontend on Windows server..."
+
+    - cd C:\Users\Admin\Documents\TG-referral-bot\telegram-bot-front
+
+    - echo "Pulling latest code..."
+    - git pull origin master
+
+    - echo "Installing dependencies..."
+    - npm install
+
+    - echo "Building Next.js app..."
+    - npm run build
+
+    - echo "Restarting frontend app..."
+
+    # Delete old process safely
+    - pm2 delete telegram-bot-front 2>$null
+
+    # Start correctly using cmd.exe (IMPORTANT FIX)
+    - pm2 start cmd.exe --name telegram-bot-front -- /c "npm start"
+
+    - pm2 save
