@@ -57,6 +57,7 @@ export default function ReportsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [campaignId, setCampaignId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
+  const [joinedUsers, setJoinedUsers] = useState<number | null>(null);
 
   const fetchCampaigns = async () => {
     try {
@@ -90,6 +91,13 @@ export default function ReportsPage() {
 
   useEffect(() => {
     fetchLeaderboard(campaignId);
+    if (campaignId) {
+      api.get<{ joinedUsers: number }>(`/campaigns/${campaignId}/stats`)
+        .then(({ data }) => setJoinedUsers(data.joinedUsers))
+        .catch(() => setJoinedUsers(null));
+    } else {
+      setJoinedUsers(null);
+    }
   }, [campaignId]);
 
   const toggleRow = (userId: number) => {
@@ -243,7 +251,11 @@ export default function ReportsPage() {
             {/* All Time Stats label */}
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-100">
               <Calendar className="w-4 h-4 text-slate-400" />
-              <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">All Time Stats</span>
+              {campaignId && joinedUsers !== null ? (
+                <span className="text-[12px] font-bold text-[#004360]">{joinedUsers} joined</span>
+              ) : (
+                <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">All Time Stats</span>
+              )}
             </div>
 
             {/* Campaign selector */}
@@ -453,8 +465,8 @@ function LeaderboardRow({
         <td className="px-6 py-8">
           <span
             className={`px-4 py-1.5 rounded-full text-[9px] font-normal uppercase tracking-widest border ${entry.user.onboardingStatus === 'COMPLETED'
-                ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-                : 'bg-slate-100 text-slate-400 border-slate-200'
+              ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+              : 'bg-slate-100 text-slate-400 border-slate-200'
               }`}
           >
             {entry.user.onboardingStatus}
@@ -466,8 +478,8 @@ function LeaderboardRow({
         <td className="pr-10 pl-6 py-8 text-right">
           <button
             className={`p-3 glass rounded-xl transition-all shadow-sm ${isExpanded
-                ? 'bg-[#004360] text-white'
-                : 'text-[#004360] bg-[#004360]/5 border-[#004360]/10 hover:bg-[#004360]/10'
+              ? 'bg-[#004360] text-white'
+              : 'text-[#004360] bg-[#004360]/5 border-[#004360]/10 hover:bg-[#004360]/10'
               }`}
           >
             {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
