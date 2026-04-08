@@ -43,7 +43,7 @@ deploy_frontend:
           telegram-bot-front
       EOF
 
-deploy_frontend:
+deploy_frontend_windows:
   stage: deploy
   only:
     - master
