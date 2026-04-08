@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
+import * as XLSX from 'xlsx';
 
 interface LeaderboardEntry {
   rank: number;
@@ -56,7 +57,6 @@ export default function ReportsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [campaignId, setCampaignId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
-  const [joinedUsers, setJoinedUsers] = useState<number | null>(null);
 
   const fetchCampaigns = async () => {
     try {
@@ -90,24 +90,16 @@ export default function ReportsPage() {
 
   useEffect(() => {
     fetchLeaderboard(campaignId);
-    if (campaignId) {
-      api.get<{ joinedUsers: number }>(`/campaigns/${campaignId}/stats`)
-        .then(({ data }) => setJoinedUsers(data.joinedUsers))
-        .catch(() => setJoinedUsers(null));
-    } else {
-      setJoinedUsers(null);
-    }
   }, [campaignId]);
 
   const toggleRow = (userId: number) => {
     setExpandedRow((prev) => (prev === userId ? null : userId));
   };
 
-  const exportToExcel = async () => {
+  const exportToExcel = () => {
     if (leaderboard.length === 0) return;
     setExporting(true);
     try {
-      const XLSX = await import('xlsx');
       const exportData = leaderboard.map((entry) => {
         const fullName = [entry.user?.firstName, entry.user?.lastName].filter(Boolean).join(' ');
         return {
@@ -251,11 +243,7 @@ export default function ReportsPage() {
             {/* All Time Stats label */}
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-100">
               <Calendar className="w-4 h-4 text-slate-400" />
-              {campaignId && joinedUsers !== null ? (
-                <span className="text-[12px] font-bold text-[#004360]">{joinedUsers} joined</span>
-              ) : (
-                <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">All Time Stats</span>
-              )}
+              <span className="text-[10px] font-normal text-slate-400 uppercase tracking-widest">All Time Stats</span>
             </div>
 
             {/* Campaign selector */}
