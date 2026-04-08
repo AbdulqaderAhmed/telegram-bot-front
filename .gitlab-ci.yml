@@ -52,24 +52,12 @@ deploy_frontend_windows:
 
   script:
     - echo "Deploying Next.js frontend on Windows server..."
-
     - cd C:\Users\Admin\Documents\TG-referral-bot\telegram-bot-front
-
-    - echo "Pulling latest code..."
     - git pull origin master
-
-    - echo "Installing dependencies..."
     - npm install
-
-    - echo "Building Next.js app..."
     - npm run build
 
-    - echo "Restarting frontend app..."
-
-    # Delete old process safely
-    - pm2 delete telegram-bot-front 2>$null
-
-    # Start correctly using cmd.exe (IMPORTANT FIX)
-    - pm2 start cmd.exe --name telegram-bot-front -- /c "npm start"
-
-    - pm2 save
+    # Use npx so global install not required
+    - npx pm2 delete telegram-bot-front 2>$null
+    - npx pm2 start cmd.exe --name telegram-bot-front -- /c "npm start"
+    - npx pm2 save
