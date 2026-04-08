@@ -23,7 +23,7 @@ type Campaign = {
   isCurrent: boolean;
   isActive: boolean;
   createdAt: string;
-  joinedUsers?: number;
+  activeUsers?: number;
 };
 
 const inputCls = "w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all text-[14px]";
@@ -165,10 +165,10 @@ export default function CampaignsPage() {
       const withStats = await Promise.all(
         data.map(async (c) => {
           try {
-            const { data: stats } = await api.get<{ joinedUsers: number }>(`/campaigns/${c.id}/stats`);
-            return { ...c, joinedUsers: stats.joinedUsers };
+            const { data: stats } = await api.get<{ activeUsers: number }>(`/campaigns/${c.id}/stats`);
+            return { ...c, activeUsers: stats.activeUsers };
           } catch {
-            return { ...c, joinedUsers: 0 };
+            return { ...c, activeUsers: 0 };
           }
         })
       );
@@ -320,7 +320,7 @@ export default function CampaignsPage() {
                   <p className="text-[12px] text-slate-400">Start: {new Date(c.startDate).toLocaleDateString()}{c.endDate ? ` | End: ${new Date(c.endDate).toLocaleDateString()}` : ""}</p>
                   <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-[11px] font-bold flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    {c.joinedUsers ?? 0} joined
+                    {c.activeUsers ?? 0} active users
                   </span>
                 </div>
 
