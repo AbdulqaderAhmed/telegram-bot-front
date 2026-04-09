@@ -170,47 +170,36 @@ export default function AnalyticsPage() {
         {/* MAIN CHARTS GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Referral Trajectory */}
-          <div className="p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm relative overflow-hidden group">
-            <div className="flex items-center justify-between mb-10">
-              <div>
-                <h4 className="text-[16px] font-bold text-[#004360]">Referral Trajectory</h4>
-                <p className="text-[12px] font-normal text-slate-400 uppercase tracking-widest mt-1">7-Day Growth Flow</p>
+          <InteractiveLineChart
+            title="Referral Trajectory"
+            subtitle="New referrals per day — last 7 days"
+            color="#004360"
+            data={growth.map(p => ({
+              label: `${new Date(p.date).getDate()}/${new Date(p.date).getMonth() + 1}`,
+              value: p.count,
+              tooltip: `${new Date(p.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}: ${p.count} referral${p.count !== 1 ? 's' : ''}`,
+            }))}
+            badge={
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-bold ${trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                {trend >= 0 ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
+                {trend >= 0 ? '+' : ''}{trend}% vs yesterday
               </div>
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-normal ${trend >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                {trend >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                {trend >= 0 ? '+' : ''}{trend}%
-              </div>
-            </div>
-            <div className="relative h-[200px] w-full">
-              <ChartSVG points={trajectoryPoints} path={getPath(trajectoryPoints)} area={getArea(trajectoryPoints, getPath(trajectoryPoints))} color="#004360" />
-            </div>
-            <div className="flex justify-between mt-6 px-2">
-              {growth.map(p => (
-                <p key={p.date} className="text-[10px] font-normal text-slate-400">{new Date(p.date).getDate()}/{new Date(p.date).getMonth() + 1}</p>
-              ))}
-            </div>
-          </div>
+            }
+            loading={loading}
+          />
 
-          {/* Engagement Pulse (Hourly) */}
-          <div className="p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm relative overflow-hidden group">
-            <div className="flex items-center justify-between mb-10">
-              <div>
-                <h4 className="text-[16px] font-bold text-[#004360]">Hourly Engagement</h4>
-                <p className="text-[12px] font-normal text-slate-400 uppercase tracking-widest mt-1">Join Activity Pulse</p>
-              </div>
-              <div className="bg-slate-50 p-2 rounded-xl">
-                <Clock className="w-4 h-4 text-blue-500" />
-              </div>
-            </div>
-            <div className="relative h-[200px] w-full">
-              <ChartSVG points={hourlyPoints} path={getPath(hourlyPoints)} area={getArea(hourlyPoints, getPath(hourlyPoints))} color="#FF6B0B" />
-            </div>
-            <div className="flex justify-between mt-6 px-2">
-              {[0, 6, 12, 18, 23].map(h => (
-                <p key={h} className="text-[10px] font-normal text-slate-400">{h}:00</p>
-              ))}
-            </div>
-          </div>
+          {/* Hourly Engagement */}
+          <InteractiveBarChart
+            title="Hourly Engagement"
+            subtitle="Referral join activity by hour of day (all time)"
+            color="#FF6B0B"
+            data={hourly.map(p => ({
+              label: `${p.hour}:00`,
+              value: p.count,
+              tooltip: `${p.hour}:00 – ${p.hour + 1}:00: ${p.count} join${p.count !== 1 ? 's' : ''}`,
+            }))}
+            loading={loading}
+          />
         </div>
 
         {/* BOTTOM SEGMENTATION GRID */}
@@ -269,6 +258,248 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function InteractiveLineChart({ title, subtitle, color, data, badge, loading }: {
+  title: string;
+  subtitle: string;
+  color: string;
+  data: { label: string; value: number; tooltip: string }[];
+  badge?: React.ReactNode;
+  loading: boolean;
+}) {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const W = 800, H = 200, PAD = 10;
+  const max = Math.max(...data.map(d => d.value), 1);
+  const gridLines = [0, 0.25, 0.5, 0.75, 1];
+
+  const pts = data.map((d, i) => ({
+    x: data.length < 2 ? W / 2 : PAD + (i / (data.length - 1)) * (W - PAD * 2),
+    y: H - PAD - (d.value / max) * (H - PAD * 2),
+  }));
+
+  const path = pts.length > 1
+    ? pts.reduce((acc, p, i) => {
+      if (i === 0) return `M ${p.x} ${p.y}`;
+      const prev = pts[i - 1];
+      const cx = (prev.x + p.x) / 2;
+      return `${acc} C ${cx} ${prev.y} ${cx} ${p.y} ${p.x} ${p.y}`;
+    }, '')
+    : '';
+  const area = path ? `${path} L ${pts[pts.length - 1].x} ${H} L ${pts[0].x} ${H} Z` : '';
+
+  return (
+    <div className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm">
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h4 className="text-[16px] font-bold text-[#004360]">{title}</h4>
+          <p className="text-[12px] text-slate-400 mt-1">{subtitle}</p>
+        </div>
+        {badge}
+      </div>
+
+      {loading ? (
+        <div className="h-[220px] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-slate-200 border-t-[#004360] rounded-full animate-spin" />
+        </div>
+      ) : data.length === 0 || data.every(d => d.value === 0) ? (
+        <div className="h-[220px] flex flex-col items-center justify-center text-slate-300 gap-2">
+          <TrendingUp className="w-10 h-10" />
+          <p className="text-[13px]">No data yet</p>
+        </div>
+      ) : (
+        <div className="relative">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[200px] overflow-visible">
+            <defs>
+              <linearGradient id={`lg-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity="0.18" />
+                <stop offset="100%" stopColor={color} stopOpacity="0" />
+              </linearGradient>
+            </defs>
+
+            {/* Grid lines */}
+            {gridLines.map((g, i) => {
+              const y = PAD + (1 - g) * (H - PAD * 2);
+              return (
+                <g key={i}>
+                  <line x1={PAD} y1={y} x2={W - PAD} y2={y} stroke="#f1f5f9" strokeWidth="1" />
+                  <text x={0} y={y + 4} fontSize="18" fill="#cbd5e1" textAnchor="start">
+                    {Math.round(g * max)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Area fill */}
+            <path d={area} fill={`url(#lg-${color.replace('#', '')})`} />
+
+            {/* Line */}
+            <motion.path
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 1.2, ease: 'easeInOut' }}
+              d={path}
+              fill="none"
+              stroke={color}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+
+            {/* Hover vertical line */}
+            {hovered !== null && pts[hovered] && (
+              <line
+                x1={pts[hovered].x} y1={PAD}
+                x2={pts[hovered].x} y2={H - PAD}
+                stroke={color} strokeWidth="1" strokeDasharray="4 3" opacity="0.4"
+              />
+            )}
+
+            {/* Data points */}
+            {pts.map((p, i) => (
+              <g key={i} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)} style={{ cursor: 'pointer' }}>
+                <circle cx={p.x} cy={p.y} r="14" fill="transparent" />
+                <circle
+                  cx={p.x} cy={p.y}
+                  r={hovered === i ? 6 : 4}
+                  fill="white"
+                  stroke={color}
+                  strokeWidth={hovered === i ? 3 : 2}
+                  style={{ transition: 'r 0.15s' }}
+                />
+              </g>
+            ))}
+          </svg>
+
+          {/* Tooltip */}
+          {hovered !== null && data[hovered] && (
+            <div
+              className="absolute -top-2 pointer-events-none z-10 bg-[#004360] text-white text-[12px] font-bold px-3 py-2 rounded-xl shadow-lg whitespace-nowrap"
+              style={{
+                left: `${(pts[hovered].x / W) * 100}%`,
+                transform: 'translateX(-50%)',
+              }}
+            >
+              {data[hovered].tooltip}
+              <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[#004360]" />
+            </div>
+          )}
+
+          {/* X axis labels */}
+          <div className="flex justify-between mt-3 px-1">
+            {data.map((d, i) => (
+              <span
+                key={i}
+                className={`text-[10px] transition-colors ${hovered === i ? 'text-[#004360] font-bold' : 'text-slate-400'}`}
+              >
+                {d.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InteractiveBarChart({ title, subtitle, color, data, loading }: {
+  title: string;
+  subtitle: string;
+  color: string;
+  data: { label: string; value: number; tooltip: string }[];
+  loading: boolean;
+}) {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const max = Math.max(...data.map(d => d.value), 1);
+  const peakHour = data.reduce((a, b) => b.value > a.value ? b : a, data[0]);
+
+  return (
+    <div className="p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm">
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h4 className="text-[16px] font-bold text-[#004360]">{title}</h4>
+          <p className="text-[12px] text-slate-400 mt-1">{subtitle}</p>
+        </div>
+        {!loading && peakHour && peakHour.value > 0 && (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-bold bg-orange-50 text-[#FF6B0B]">
+            <Clock className="w-3.5 h-3.5" />
+            Peak: {peakHour.label}
+          </div>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="h-[220px] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-slate-200 border-t-[#FF6B0B] rounded-full animate-spin" />
+        </div>
+      ) : data.length === 0 || data.every(d => d.value === 0) ? (
+        <div className="h-[220px] flex flex-col items-center justify-center text-slate-300 gap-2">
+          <Clock className="w-10 h-10" />
+          <p className="text-[13px]">No activity recorded yet</p>
+        </div>
+      ) : (
+        <div className="relative">
+          {/* Bars */}
+          <div className="flex items-end gap-[2px] h-[180px] relative">
+            {/* Grid lines */}
+            {[0.25, 0.5, 0.75, 1].map((g, i) => (
+              <div
+                key={i}
+                className="absolute w-full border-t border-slate-50"
+                style={{ bottom: `${g * 100}%` }}
+              />
+            ))}
+
+            {data.map((d, i) => {
+              const heightPct = (d.value / max) * 100;
+              const isHovered = hovered === i;
+              const isPeak = d.value === max && d.value > 0;
+              return (
+                <div
+                  key={i}
+                  className="relative flex-1 flex flex-col items-center justify-end group"
+                  onMouseEnter={() => setHovered(i)}
+                  onMouseLeave={() => setHovered(null)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {/* Tooltip */}
+                  {isHovered && (
+                    <div className="absolute bottom-full mb-2 z-10 bg-[#004360] text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap pointer-events-none"
+                      style={{ left: '50%', transform: 'translateX(-50%)' }}>
+                      {d.tooltip}
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[#004360]" />
+                    </div>
+                  )}
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${Math.max(heightPct, d.value > 0 ? 2 : 0)}%` }}
+                    transition={{ duration: 0.6, delay: i * 0.01, ease: 'easeOut' }}
+                    className="w-full rounded-t-md transition-opacity"
+                    style={{
+                      backgroundColor: isHovered ? '#004360' : isPeak ? color : `${color}99`,
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* X axis — show only every 3 hours */}
+          <div className="flex gap-[2px] mt-2">
+            {data.map((d, i) => (
+              <div key={i} className="flex-1 text-center">
+                {i % 3 === 0 && (
+                  <span className={`text-[9px] ${hovered === i ? 'text-[#004360] font-bold' : 'text-slate-400'}`}>
+                    {d.label}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
