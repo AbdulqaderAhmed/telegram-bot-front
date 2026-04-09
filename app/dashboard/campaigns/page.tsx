@@ -30,6 +30,63 @@ const inputCls = "w-full bg-slate-50 border border-slate-200 text-[#004360] font
 const textareaCls = "w-full bg-slate-50 border border-slate-200 text-[#004360] font-normal rounded-2xl py-3 px-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all min-h-[110px] resize-y text-[14px]";
 const labelCls = "text-[11px] font-bold text-slate-500 uppercase tracking-widest";
 
+// Renders a preview of the text with bold (*text*), numbered lists, and bullet lists
+function RichPreview({ text }: { text: string }) {
+  if (!text.trim()) return null;
+
+  const lines = text.split(/\r?\n/);
+
+  const renderLine = (line: string, idx: number) => {
+    // Parse *bold* inline
+    const parseBold = (str: string): React.ReactNode[] => {
+      const parts = str.split(/(\*[^*]+\*)/g);
+      return parts.map((part, i) =>
+        part.startsWith('*') && part.endsWith('*') && part.length > 2
+          ? <strong key={i} className="font-bold">{part.slice(1, -1)}</strong>
+          : <span key={i}>{part}</span>
+      );
+    };
+
+    const trimmed = line.trim();
+    if (!trimmed) return <div key={idx} className="h-2" />;
+
+    // Numbered list: starts with digit(s) followed by . ) -
+    const numMatch = trimmed.match(/^(\d+)[.)]\s+(.*)/);
+    if (numMatch) {
+      return (
+        <div key={idx} className="flex gap-2 text-[13px] text-[#004360]">
+          <span className="font-bold min-w-[20px]">{numMatch[1]}.</span>
+          <span>{parseBold(numMatch[2])}</span>
+        </div>
+      );
+    }
+
+    // Bullet list: starts with o, -, *, •
+    const bulletMatch = trimmed.match(/^(?:o|•|-|\*)\s+(.*)/i);
+    if (bulletMatch) {
+      return (
+        <div key={idx} className="flex gap-2 text-[13px] text-[#004360]">
+          <span className="font-bold min-w-[12px]">•</span>
+          <span>{parseBold(bulletMatch[1])}</span>
+        </div>
+      );
+    }
+
+    return (
+      <div key={idx} className="text-[13px] text-[#004360]">
+        {parseBold(trimmed)}
+      </div>
+    );
+  };
+
+  return (
+    <div className="mt-2 p-3 bg-white border border-slate-200 rounded-2xl space-y-1 min-h-[60px]">
+      <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest mb-2">Preview</p>
+      {lines.map((line, idx) => renderLine(line, idx))}
+    </div>
+  );
+}
+
 type FormState = {
   nameAm: string;
   starterTitle: string;
@@ -105,11 +162,13 @@ function CampaignForm({ form, setForm, onSubmit, saving, submitLabel }: {
             <label className={labelCls}>Description</label>
             <textarea value={form.starterDescription} onChange={set("starterDescription")} className={textareaCls}
               placeholder={"የወጋገን ባንክን ይፋዊ ቴሌግራም ገጽ ይቀላቀሉ...\no 1ኛ ሙክት በግ\no 2ኛ ቅርጫ ስጋ\n\nLines starting with o, -, *, •, or 1. become list items."} />
+            <RichPreview text={form.starterDescription} />
           </div>
           <div className="space-y-2">
             <label className={labelCls}>Rules</label>
             <textarea value={form.starterRules} onChange={set("starterRules")} className={textareaCls}
               placeholder={"1. ተወዳዳሪዎች ቢያንስ 50 ሠው ወደ ቻናሉ ማስገባት አለባቸው\n2. አሸናፊዎች የቴሌግራም ገጻችን ተከታይ መሆን አለባቸው\n3. የተጋበዘው ቤተሠብ ቻናሉን መቀላቀል አለበት\n4. ከፍተኛ ቁጥር ያስገቡ 10 ተወዳዳሪዎች ተሸላሚ ይሆናሉ"} />
+            <RichPreview text={form.starterRules} />
           </div>
         </div>
 
@@ -131,6 +190,7 @@ function CampaignForm({ form, setForm, onSubmit, saving, submitLabel }: {
             <label className={labelCls}>Description</label>
             <textarea value={form.invitationDescription} onChange={set("invitationDescription")} className={textareaCls}
               placeholder={"Use {username} for the inviter's name.\n\nይህ {username} የተላከ መረጃ ነው!\nየወጋገን ባንክን ይፋዊ ቴሌግራም ገጽ ይቀላቀሉ...\n1ኛ ሙክት በግ\n2ኛ ቅርጫ ስጋ"} />
+            <RichPreview text={form.invitationDescription} />
             <p className="text-[11px] text-slate-400">Use <code className="bg-slate-100 px-1 rounded">{"{username}"}</code> to insert the inviter&apos;s name. Lines starting with o, -, *, •, or 1. become list items.</p>
           </div>
         </div>
