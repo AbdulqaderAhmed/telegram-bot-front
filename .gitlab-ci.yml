@@ -71,7 +71,7 @@ deploy_frontend_windows:
     - powershell -Command "try { npx pm2 delete telegram-bot-front -q } catch { Write-Host 'Process not found, skipping.' }; exit 0"
 
     - echo "Starting frontend with clean environment..."
-    - npx pm2 start cmd.exe --name telegram-bot-front --update-env -- /c "npm start"
+    - npx pm2 start npm --name telegram-bot-front -- start
 
     - echo "Saving PM2 process list..."
     - npx pm2 save
