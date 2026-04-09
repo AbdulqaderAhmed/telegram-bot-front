@@ -71,7 +71,7 @@ deploy_frontend_windows:
         $ErrorActionPreference = "SilentlyContinue"
 
         cmd /c "pm2 delete telegram-bot-front" | Out-Null
-        cmd /c "pm2 start npm --name telegram-bot-front -- start"
+        cmd /c "pm2 start cmd --name telegram-bot-front -- /c npm start"
         cmd /c "pm2 save"
 
         exit 0
