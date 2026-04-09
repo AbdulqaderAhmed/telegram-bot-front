@@ -434,7 +434,7 @@ function InteractiveBarChart({ title, subtitle, color, data, loading }: {
         <div className="h-[220px] flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-slate-200 border-t-[#FF6B0B] rounded-full animate-spin" />
         </div>
-      ) : data.length === 0 || data.every(d => d.value === 0) ? (
+      ) : data.length === 0 ? (
         <div className="h-[220px] flex flex-col items-center justify-center text-slate-300 gap-2">
           <Clock className="w-10 h-10" />
           <p className="text-[13px]">No activity recorded yet</p>
