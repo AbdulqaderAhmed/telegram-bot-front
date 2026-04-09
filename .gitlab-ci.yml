@@ -70,8 +70,8 @@ deploy_frontend_windows:
     - |
         $ErrorActionPreference = "SilentlyContinue"
 
-        npx pm2 delete telegram-bot-front
-        npx pm2 start npm --name telegram-bot-front -- start
-        npx pm2 save
+        cmd /c "pm2 delete telegram-bot-front" | Out-Null
+        cmd /c "pm2 start npm --name telegram-bot-front -- start"
+        cmd /c "pm2 save"
 
         exit 0
