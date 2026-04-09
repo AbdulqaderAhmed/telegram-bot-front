@@ -387,6 +387,8 @@ function LeaderboardRow({
   const [referredUsers, setReferredUsers] = useState<any[]>([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const [detailPage, setDetailPage] = useState(1);
+  const DETAIL_PAGE_SIZE = 10;
 
   useEffect(() => {
     if (isExpanded && !hasFetched) {
@@ -403,7 +405,11 @@ function LeaderboardRow({
         })
         .finally(() => setLoadingDetails(false));
     }
+    if (!isExpanded) setDetailPage(1);
   }, [isExpanded, hasFetched, entry.user.id]);
+
+  const detailTotalPages = Math.max(1, Math.ceil(referredUsers.length / DETAIL_PAGE_SIZE));
+  const pagedUsers = referredUsers.slice((detailPage - 1) * DETAIL_PAGE_SIZE, detailPage * DETAIL_PAGE_SIZE);
 
   return (
     <React.Fragment>
@@ -509,7 +515,7 @@ function LeaderboardRow({
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                          {referredUsers.map((ref: any, idx) => {
+                          {pagedUsers.map((ref: any, idx) => {
                             const fullName = [ref.referredUser?.firstName, ref.referredUser?.lastName]
                               .filter(Boolean)
                               .join(' ');
@@ -545,6 +551,38 @@ function LeaderboardRow({
                           })}
                         </tbody>
                       </table>
+                      {referredUsers.length > DETAIL_PAGE_SIZE && (
+                        <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
+                          <span className="text-[11px] text-slate-400">
+                            {(detailPage - 1) * DETAIL_PAGE_SIZE + 1}–{Math.min(detailPage * DETAIL_PAGE_SIZE, referredUsers.length)} of {referredUsers.length}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setDetailPage(p => Math.max(1, p - 1))}
+                              disabled={detailPage === 1}
+                              className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:text-[#004360] hover:border-[#004360]/30 disabled:opacity-30 transition-all"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5" />
+                            </button>
+                            {Array.from({ length: detailTotalPages }, (_, i) => i + 1).map(p => (
+                              <button
+                                key={p}
+                                onClick={() => setDetailPage(p)}
+                                className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${p === detailPage ? 'bg-[#004360] text-white' : 'border border-slate-200 text-slate-400 hover:border-[#004360]/30 hover:text-[#004360]'}`}
+                              >
+                                {p}
+                              </button>
+                            ))}
+                            <button
+                              onClick={() => setDetailPage(p => Math.min(detailTotalPages, p + 1))}
+                              disabled={detailPage === detailTotalPages}
+                              className="p-1.5 rounded-lg border border-slate-200 text-slate-400 hover:text-[#004360] hover:border-[#004360]/30 disabled:opacity-30 transition-all"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
