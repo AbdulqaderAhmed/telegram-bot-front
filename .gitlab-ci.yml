@@ -65,10 +65,16 @@ deploy_frontend_windows:
 
     - echo "Setting PM2 home to avoid permission issues..."
     - $env:PM2_HOME = "C:\Users\Admin\.pm2"
-    
+
     - echo "Starting frontend with clean environment..."
-    - npx pm2 describe telegram-bot-front > $null 2>&1
-    - if ($LASTEXITCODE -eq 0) { npx pm2 restart telegram-bot-front } else { npx pm2 start npm --name telegram-bot-front -- start }
+    - |
+      try {
+        npx pm2 describe telegram-bot-front | Out-Null
+        npx pm2 restart telegram-bot-front
+      }
+      catch {
+        npx pm2 start npm --name telegram-bot-front -- start
+      }
     - npx pm2 save
 
     - echo "Saving PM2 process list..."
