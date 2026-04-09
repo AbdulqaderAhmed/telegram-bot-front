@@ -27,7 +27,9 @@ import api from '@/lib/axios';
 interface Overview {
   totalUsers: number;
   totalReferrals: number;
-  completedOnboarding: number;
+  verifiedReferrals: number;
+  noReferralUsers: number;
+  leftReferrals: number;
   completionRate: number;
 }
 
@@ -151,9 +153,9 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { label: 'Total Users', value: overview?.totalUsers || 0, icon: Users, color: 'text-blue-500' },
-            { label: 'Referrals', value: overview?.totalReferrals || 0, icon: UserPlus, color: 'text-[#FF6B0B]' },
-            { label: 'Verified', value: overview?.completedOnboarding || 0, icon: Target, color: 'text-emerald-500' },
-            { label: 'Success Rate', value: `${overview?.completionRate || 0}%`, icon: Activity, color: 'text-[#FF8F12]' }
+            { label: 'Verified Referrals', value: overview?.verifiedReferrals || 0, icon: Target, color: 'text-emerald-500' },
+            { label: 'Joined Without Link', value: overview?.noReferralUsers || 0, icon: UserPlus, color: 'text-[#FF6B0B]' },
+            { label: 'Left Channel', value: overview?.leftReferrals || 0, icon: Activity, color: 'text-rose-500' },
           ].map((stat) => (
             <div key={stat.label} className="p-8 bg-white border border-slate-100 rounded-[2rem] shadow-sm">
               <div className={`w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center ${stat.color} mb-6`}>
