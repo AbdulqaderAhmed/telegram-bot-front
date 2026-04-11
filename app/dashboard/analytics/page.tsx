@@ -238,7 +238,7 @@ export default function AnalyticsPage() {
                 const total = roles.reduce((a, b) => a + b.count, 0) || 1;
                 const pct = Math.round((stat.count / total) * 100);
                 return (
-                  <ProgressBar key={stat.role} label={stat.role} count={stat.count} pct={pct} color={stat.role === 'STAFF' ? 'bg-[#004360]' : 'bg-blue-400'} />
+                  <ProgressBar key={stat.role} label={stat.role} count={stat.count} pct={pct} color={stat.role === 'OTHER' ? 'bg-[#004360]' : 'bg-blue-400'} />
                 );
               })}
             </div>
