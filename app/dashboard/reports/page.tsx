@@ -18,6 +18,7 @@ import {
   Loader2,
   Users,
   Filter,
+  ShieldOff,
 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
@@ -48,6 +49,23 @@ interface Campaign {
 }
 
 const PAGE_SIZE = 10;
+
+// Ellipsis pagination: returns page numbers with null for gaps
+// e.g. [1, null, 4, 5, 6, null, 20]
+function getPaginationItems(current: number, total: number): (number | null)[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const delta = 1;
+  const range: number[] = [];
+  for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+    range.push(i);
+  }
+  const items: (number | null)[] = [1];
+  if (range[0] > 2) items.push(null);
+  items.push(...range);
+  if (range[range.length - 1] < total - 1) items.push(null);
+  items.push(total);
+  return items;
+}
 
 export default function ReportsPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -289,6 +307,7 @@ export default function ReportsPage() {
                 <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Verified Score</th>
                 <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Onboarding</th>
                 <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Campaign</th>
+                <th className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Action</th>
                 <th className="pr-10 pl-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] text-right">Network</th>
               </tr>
             </thead>
@@ -296,14 +315,14 @@ export default function ReportsPage() {
               {loading ? (
                 [...Array(PAGE_SIZE)].map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td colSpan={7} className="px-10 py-8">
+                    <td colSpan={8} className="px-10 py-8">
                       <div className="h-4 bg-slate-100 rounded-full w-full" />
                     </td>
                   </tr>
                 ))
               ) : leaderboard.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-10 py-24 text-center">
+                  <td colSpan={8} className="px-10 py-24 text-center">
                     <div className="flex flex-col items-center gap-4 opacity-30 grayscale">
                       <Trophy className="w-16 h-16" />
                       <p className="text-[16px] font-bold text-slate-500">The leaderboard is currently empty.</p>
@@ -321,6 +340,9 @@ export default function ReportsPage() {
                     onToggle={() => toggleRow(entry.user.id)}
                     getMedalIcon={getMedalIcon}
                     campaignName={campaignName}
+                    onBan={() => {
+                      setLeaderboard(prev => prev.filter(e => e.user.id !== entry.user.id));
+                    }}
                   />
                 ))
               )}
@@ -342,18 +364,11 @@ export default function ReportsPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={`w-9 h-9 rounded-xl text-[12px] font-bold transition-all ${p === page
-                    ? 'bg-[#004360] text-white shadow-md'
-                    : 'border border-slate-200 text-slate-400 hover:border-[#004360]/30 hover:text-[#004360]'
-                    }`}
-                >
-                  {p}
-                </button>
-              ))}
+              {getPaginationItems(page, totalPages).map((p, idx) =>
+                p === null
+                  ? <span key={`e-${idx}`} className="w-9 h-9 flex items-center justify-center text-slate-400 text-[12px]">…</span>
+                  : <button key={p} onClick={() => setPage(p)} className={`w-9 h-9 rounded-xl text-[12px] font-bold transition-all ${p === page ? 'bg-[#004360] text-white shadow-md' : 'border border-slate-200 text-slate-400 hover:border-[#004360]/30 hover:text-[#004360]'}`}>{p}</button>
+              )}
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
@@ -376,6 +391,7 @@ function LeaderboardRow({
   onToggle,
   getMedalIcon,
   campaignName,
+  onBan,
 }: {
   entry: LeaderboardEntry;
   index: number;
@@ -383,11 +399,13 @@ function LeaderboardRow({
   onToggle: () => void;
   getMedalIcon: (rank: number) => React.ReactNode;
   campaignName: string;
+  onBan: () => void;
 }) {
   const [referredUsers, setReferredUsers] = useState<any[]>([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
   const [detailPage, setDetailPage] = useState(1);
+  const [banning, setBanning] = useState(false);
   const DETAIL_PAGE_SIZE = 10;
 
   useEffect(() => {
@@ -469,6 +487,27 @@ function LeaderboardRow({
         <td className="px-6 py-8">
           <span className="text-[13px] font-semibold text-[#004360]">{campaignName}</span>
         </td>
+        <td className="px-6 py-8" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={async () => {
+              if (!confirm(`Ban this user and remove all their referrals?`)) return;
+              setBanning(true);
+              try {
+                await api.post(`/users/${entry.user.id}/ban`);
+                onBan();
+              } catch (err) {
+                console.error('Ban failed:', err);
+              } finally {
+                setBanning(false);
+              }
+            }}
+            disabled={banning}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-600 border border-rose-500/20 text-[11px] font-bold hover:bg-rose-500/20 transition-all disabled:opacity-40"
+          >
+            {banning ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldOff className="w-3.5 h-3.5" />}
+            Ban All
+          </button>
+        </td>
         <td className="pr-10 pl-6 py-8 text-right">
           <button
             className={`p-3 glass rounded-xl transition-all shadow-sm ${isExpanded
@@ -484,7 +523,7 @@ function LeaderboardRow({
       <AnimatePresence>
         {isExpanded && (
           <tr>
-            <td colSpan={7} className="p-0 border-b border-slate-100 bg-slate-50/50">
+            <td colSpan={8} className="p-0 border-b border-slate-100 bg-slate-50/50">
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
@@ -564,15 +603,11 @@ function LeaderboardRow({
                             >
                               <ChevronLeft className="w-3.5 h-3.5" />
                             </button>
-                            {Array.from({ length: detailTotalPages }, (_, i) => i + 1).map(p => (
-                              <button
-                                key={p}
-                                onClick={() => setDetailPage(p)}
-                                className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${p === detailPage ? 'bg-[#004360] text-white' : 'border border-slate-200 text-slate-400 hover:border-[#004360]/30 hover:text-[#004360]'}`}
-                              >
-                                {p}
-                              </button>
-                            ))}
+                            {getPaginationItems(detailPage, detailTotalPages).map((p, idx) =>
+                              p === null
+                                ? <span key={`de-${idx}`} className="w-7 h-7 flex items-center justify-center text-slate-400 text-[11px]">…</span>
+                                : <button key={p} onClick={() => setDetailPage(p)} className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${p === detailPage ? 'bg-[#004360] text-white' : 'border border-slate-200 text-slate-400 hover:border-[#004360]/30 hover:text-[#004360]'}`}>{p}</button>
+                            )}
                             <button
                               onClick={() => setDetailPage(p => Math.min(detailTotalPages, p + 1))}
                               disabled={detailPage === detailTotalPages}
