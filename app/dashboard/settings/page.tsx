@@ -173,7 +173,15 @@ export default function SettingsPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleChange('REFERRAL_ENABLED', isEnabled ? 'false' : 'true')}
+                        onClick={async () => {
+                          const newVal = isEnabled ? 'false' : 'true';
+                          handleChange('REFERRAL_ENABLED', newVal);
+                          try {
+                            await api.patch('/settings', { settings: [{ key: 'REFERRAL_ENABLED', value: newVal }] });
+                          } catch (err) {
+                            console.error('Failed to toggle referral:', err);
+                          }
+                        }}
                         className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none ${isEnabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
                       >
                         <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${isEnabled ? 'translate-x-7' : 'translate-x-0'}`} />
