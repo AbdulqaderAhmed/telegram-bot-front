@@ -12,6 +12,7 @@ import {
   AlertCircle,
   Bot,
   Radio,
+  Power,
 } from 'lucide-react';
 import api from '@/lib/axios';
 
@@ -26,6 +27,8 @@ const SETTING_META: Record<string, { label: string; placeholder: string }> = {
   REQUIRED_CHANNEL_ID: { label: 'Required Channel ID', placeholder: 'e.g. @wegagen_channel or -100123456789' },
   REFERRAL_VERIFICATION_DELAY: { label: 'Referral Verification Delay', placeholder: 'Delay in ms (0 = instant)' },
 };
+
+const TEXT_SETTING_KEYS = ['BOT_USERNAME', 'REQUIRED_CHANNEL_ID', 'REFERRAL_VERIFICATION_DELAY'];
 
 function SettingIcon({ settingKey }: { settingKey: string }) {
   const cls = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[#FF6B0B] transition-colors';
@@ -147,7 +150,41 @@ export default function SettingsPage() {
             <div className="text-center p-12 text-slate-400 font-bold">No configurable settings available right now.</div>
           ) : (
             <div className="space-y-6">
-              {settings.map((setting) => {
+              {/* Referral Enable/Disable Toggle */}
+              {(() => {
+                const referralSetting = settings.find(s => s.key === 'REFERRAL_ENABLED');
+                if (!referralSetting) return null;
+                const isEnabled = referralSetting.value !== 'false';
+                return (
+                  <div className={`p-6 rounded-2xl border-2 transition-all ${isEnabled ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/50'}`}>
+                    <div className="flex items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`p-3 rounded-2xl ${isEnabled ? 'bg-emerald-500/10' : 'bg-rose-500/10'}`}>
+                          <Power className={`w-6 h-6 ${isEnabled ? 'text-emerald-600' : 'text-rose-500'}`} />
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-bold text-[#004360]">Referral & Invitation System</p>
+                          <p className="text-[12px] text-slate-500 mt-0.5">
+                            {isEnabled
+                              ? 'Active — users can share links and referrals are being counted'
+                              : 'Disabled — share button hidden, new joins not counted. Leaderboard & T&C still work.'}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleChange('REFERRAL_ENABLED', isEnabled ? 'false' : 'true')}
+                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none ${isEnabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${isEnabled ? 'translate-x-7' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Text settings */}
+              {settings.filter(s => TEXT_SETTING_KEYS.includes(s.key)).map((setting) => {
                 const meta = SETTING_META[setting.key];
                 const label = meta?.label ?? setting.key.replace(/_/g, ' ');
                 const placeholder = meta?.placeholder ?? '';
