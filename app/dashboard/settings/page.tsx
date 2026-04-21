@@ -22,13 +22,15 @@ interface Setting {
   description: string;
 }
 
-const SETTING_META: Record<string, { label: string; placeholder: string }> = {
+const SETTING_META: Record<string, { label: string; placeholder: string; type?: string }> = {
   BOT_USERNAME: { label: 'Bot Username', placeholder: 'e.g. wegagen_ref_bot (without @)' },
   REQUIRED_CHANNEL_ID: { label: 'Required Channel ID', placeholder: 'e.g. @wegagen_channel or -100123456789' },
-  REFERRAL_VERIFICATION_DELAY: { label: 'Referral Verification Delay', placeholder: 'Delay in ms (0 = instant)' },
+  REFERRAL_VERIFICATION_DELAY: { label: 'Referral Verification Delay (ms)', placeholder: 'Delay in ms (0 = instant)', type: 'number' },
+  RATE_LIMIT_WINDOW_SECONDS: { label: 'Rate Limit Window (seconds)', placeholder: 'e.g. 3600 = 1 hour, 86400 = 1 day', type: 'number' },
+  RATE_LIMIT_MAX_INVITES: { label: 'Max Invites Per Window', placeholder: 'e.g. 100 invites per window', type: 'number' },
 };
 
-const TEXT_SETTING_KEYS = ['BOT_USERNAME', 'REQUIRED_CHANNEL_ID', 'REFERRAL_VERIFICATION_DELAY'];
+const TEXT_SETTING_KEYS = ['BOT_USERNAME', 'REQUIRED_CHANNEL_ID', 'REFERRAL_VERIFICATION_DELAY', 'RATE_LIMIT_WINDOW_SECONDS', 'RATE_LIMIT_MAX_INVITES'];
 
 function SettingIcon({ settingKey }: { settingKey: string }) {
   const cls = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[#FF6B0B] transition-colors';
@@ -238,8 +240,16 @@ export default function SettingsPage() {
                 const meta = SETTING_META[setting.key];
                 const label = meta?.label ?? setting.key.replace(/_/g, ' ');
                 const placeholder = meta?.placeholder ?? '';
+                const inputType = meta?.type ?? 'text';
+                const isRateField = setting.key === 'RATE_LIMIT_WINDOW_SECONDS' || setting.key === 'RATE_LIMIT_MAX_INVITES';
                 return (
-                  <div key={setting.key} className="space-y-3">
+                  <div key={setting.key} className={`space-y-3 ${isRateField ? 'p-4 bg-slate-50 rounded-2xl border border-slate-200' : ''}`}>
+                    {setting.key === 'RATE_LIMIT_WINDOW_SECONDS' && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <Clock className="w-4 h-4 text-[#FF6B0B]" />
+                        <span className="text-[11px] font-black uppercase tracking-widest text-[#FF6B0B]">Rate Limiting</span>
+                      </div>
+                    )}
                     <label className="flex flex-col gap-1">
                       <span className="text-[12px] font-bold text-[#004360] uppercase tracking-widest">{label}</span>
                       <span className="text-[12px] font-normal text-slate-400">{setting.description}</span>
@@ -247,11 +257,12 @@ export default function SettingsPage() {
                     <div className="relative group">
                       <SettingIcon settingKey={setting.key} />
                       <input
-                        type="text"
+                        type={inputType}
+                        min={inputType === 'number' ? '0' : undefined}
                         value={setting.value}
                         placeholder={placeholder}
                         onChange={(e) => handleChange(setting.key, e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 text-[#004360] font-mono text-[14px] font-normal rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
+                        className="w-full bg-white border border-slate-200 text-[#004360] font-mono text-[14px] font-normal rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#FF6B0B]/50 focus:border-[#FF6B0B]/50 outline-none transition-all"
                       />
                     </div>
                   </div>
