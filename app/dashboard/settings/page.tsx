@@ -150,6 +150,48 @@ export default function SettingsPage() {
             <div className="text-center p-12 text-slate-400 font-bold">No configurable settings available right now.</div>
           ) : (
             <div className="space-y-6">
+              {/* Bot Enable/Disable Toggle */}
+              {(() => {
+                const botSetting = settings.find(s => s.key === 'BOT_ENABLED');
+                if (!botSetting) return null;
+                const isEnabled = botSetting.value !== 'false';
+                return (
+                  <div className={`p-6 rounded-2xl border-2 transition-all ${isEnabled ? 'border-blue-200 bg-blue-50/50' : 'border-slate-300 bg-slate-100/50'}`}>
+                    <div className="flex items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`p-3 rounded-2xl ${isEnabled ? 'bg-blue-500/10' : 'bg-slate-400/10'}`}>
+                          <Bot className={`w-6 h-6 ${isEnabled ? 'text-blue-600' : 'text-slate-400'}`} />
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-bold text-[#004360]">Telegram Bot</p>
+                          <p className="text-[12px] text-slate-500 mt-0.5">
+                            {isEnabled
+                              ? 'Running — bot is responding to all user interactions'
+                              : 'Stopped — bot ignores all messages and commands'}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!confirm(isEnabled ? 'Stop the bot? Users will not be able to interact with it.' : 'Start the bot?')) return;
+                          const newVal = isEnabled ? 'false' : 'true';
+                          handleChange('BOT_ENABLED', newVal);
+                          try {
+                            await api.patch('/settings', { settings: [{ key: 'BOT_ENABLED', value: newVal }] });
+                          } catch (err) {
+                            console.error('Failed to toggle bot:', err);
+                          }
+                        }}
+                        className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none ${isEnabled ? 'bg-blue-500' : 'bg-slate-300'}`}
+                      >
+                        <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${isEnabled ? 'translate-x-7' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* Referral Enable/Disable Toggle */}
               {(() => {
                 const referralSetting = settings.find(s => s.key === 'REFERRAL_ENABLED');
