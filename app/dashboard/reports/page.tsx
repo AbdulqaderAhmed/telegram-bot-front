@@ -583,7 +583,7 @@ function LeaderboardRow({
                                   {ref.referredUser?.phoneNumber || '—'}
                                 </td>
                                 <td className="px-6 py-4 text-right text-[12px] font-normal text-slate-400">
-                                  {new Date(ref.joinTime).toLocaleDateString()}
+                                  {new Date(ref.joinTime).toLocaleString()}
                                 </td>
                               </motion.tr>
                             );
